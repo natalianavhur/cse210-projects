@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 class Program
@@ -10,7 +11,7 @@ class Program
 
         while (condition)
         {
-            Console.WriteLine("Add Item:");
+            Console.Write("Add Item:");
             string item = Console.ReadLine();
             if ("no" == item)
             {
@@ -18,14 +19,14 @@ class Program
             }
             else
             {
-                gList.Append(item);
-            }
-            Console.WriteLine("Grocery List:");
-            foreach(string i in gList){
-                Console.WriteLine($"* {i}");
+                gList.Add(item);
             }
 
         }
-
+        Console.WriteLine("Grocery List:");
+        foreach (string item in gList)
+        {
+            Console.WriteLine($"*{item}");
+        }
     }
 }
