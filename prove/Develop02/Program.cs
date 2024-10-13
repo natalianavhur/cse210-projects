@@ -42,7 +42,7 @@ class Program
             }
             else if (option == 5)
             {
-                Console.WriteLine("GoodBye");
+                Console.WriteLine();
             }
             else
             {

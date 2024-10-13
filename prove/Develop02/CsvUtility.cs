@@ -11,9 +11,28 @@ public class CsvUtility
         {
             foreach (Entry entry in entries)
             {
-                string csvLine = $"{EscapeCsv(entry.date)}," +
-                                 $"{EscapeCsv(entry.prompt)}," +
-                                 $"{EscapeCsv(entry.response)}";
+                List<string> csvParts = new List<string>();
+
+                csvParts.Add(FormatCsv(entry.date));
+                csvParts.Add(FormatCsv(entry.time));
+
+                if (!string.IsNullOrWhiteSpace(entry.title))
+                {
+                    csvParts.Add(FormatCsv(entry.title));
+                }
+                if (!string.IsNullOrWhiteSpace(entry.prompt))
+                {
+                    csvParts.Add(FormatCsv(entry.prompt));
+                }
+                if (!string.IsNullOrWhiteSpace(entry.response))
+                {
+                    csvParts.Add(FormatCsv(entry.response));
+                }
+                if (!string.IsNullOrWhiteSpace(entry.reflection))
+                {
+                    csvParts.Add(FormatCsv(entry.reflection));
+                }
+                string csvLine = string.Join(",", csvParts);
                 outputFile.WriteLine(csvLine);
             }
         }
@@ -30,34 +49,45 @@ public class CsvUtility
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {
-                    var parts = line.Split(new[] { ',' }, 3);
-                    if (parts.Length == 3)
+                    var csvParts = line.Split(',');
+                    Entry entry = new Entry();
+
+                    if (csvParts.Length >= 2)
                     {
-                        Entry entry = new Entry
-                        {
-                            date = parts[0].Trim('"'),
-                            prompt = parts[1].Trim('"'),
-                            response = parts[2].Trim('"')
-                        };
-                        entries.Add(entry);
+                        entry.date = csvParts[0].Trim('"');
+                        entry.time = csvParts[1].Trim('"');
                     }
-                    else
+                    if (csvParts.Length >= 3)
                     {
-                        Console.WriteLine("Incorrect number of parts in line.");
+                        entry.title = csvParts[2].Trim('"');
                     }
+                    if (csvParts.Length >= 4)
+                    {
+                        entry.prompt = csvParts[3].Trim('"');
+                    }
+                    if (csvParts.Length >= 5)
+                    {
+                        entry.response = csvParts[4].Trim('"');
+                    }
+                    if (csvParts.Length >= 6)
+                    {
+                        entry.reflection = csvParts[5].Trim('"');
+                    }
+
+                    entries.Add(entry);
                 }
             }
         }
         return entries;
     }
 
-    private string EscapeCsv(string value)
+    private string FormatCsv(string entry)
     {
-        if (value.Contains("\"") || value.Contains(",") || value.Contains("\n"))
+        if (entry.Contains("\"") || entry.Contains(",") || entry.Contains("\n"))
         {
-            value = value.Replace("\"", "\"\"");
-            value = $"\"{value}\"";
+            entry = entry.Replace("\"", "\"\"");
+            entry = $"\"{entry}\"";
         }
-        return value;
+        return entry;
     }
 }
