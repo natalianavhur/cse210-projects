@@ -9,9 +9,6 @@ public class Journal
         newEntry.date = newEntry.GetDate();
         newEntry.time = newEntry.GetTime();
 
-        entries.Add(newEntry);
-        entries.Add(newEntry);
-
         bool quit = false;
         while (!quit)
         {
@@ -23,9 +20,11 @@ public class Journal
                     newEntry.title = newEntry.GetTitle();
                     break;
                 case 2:
-                    newEntry.prompt = newEntry.GeneratePrompt();
-                    newEntry.DisplayPrompt(newEntry.prompt);
-                    newEntry.response = newEntry.GetResponse();
+                    string prompt = newEntry.GeneratePrompt();
+                    newEntry.DisplayPrompt(prompt);
+                    string response = newEntry.GetResponse();
+                    newEntry.promptResponses.Add((prompt, response));
+
                     break;
                 case 3:
                     newEntry.reflection = newEntry.GetReflection();

@@ -4,10 +4,10 @@ using System.Runtime.InteropServices;
 public class Entry
 {
     public string date;
-    public string prompt;
-    public string response;
-    public string title;
     public string time;
+    public List<(string prompt, string response)> promptResponses = new List<(string, string)>();
+    public string title;
+
     public string reflection;
 
     public void DisplayEntry()
@@ -18,17 +18,12 @@ public class Entry
         {
             Console.WriteLine($"Title: {title}");
         }
-
-        if (!string.IsNullOrWhiteSpace(prompt))
+        foreach (var (prompt, response) in promptResponses)
         {
             Console.WriteLine($"Prompt: {prompt}");
-        }
-
-        if (!string.IsNullOrWhiteSpace(response))
-        {
             Console.WriteLine($"Response: {response}");
-        }
 
+        }
         if (!string.IsNullOrWhiteSpace(reflection))
         {
             Console.WriteLine($"Reflection: {reflection}");

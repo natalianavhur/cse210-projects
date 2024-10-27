@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 
 
 public class CsvUtility
@@ -20,13 +21,10 @@ public class CsvUtility
                 {
                     csvParts.Add(FormatCsv(entry.title));
                 }
-                if (!string.IsNullOrWhiteSpace(entry.prompt))
+                foreach (vsr (prompt, response) in entry.promptResponses)
                 {
-                    csvParts.Add(FormatCsv(entry.prompt));
-                }
-                if (!string.IsNullOrWhiteSpace(entry.response))
-                {
-                    csvParts.Add(FormatCsv(entry.response));
+                    csvParts.Add(FormatCsv(prompt));
+                    csvParts.Add(FormatCsv(response));
                 }
                 if (!string.IsNullOrWhiteSpace(entry.reflection))
                 {
@@ -61,14 +59,7 @@ public class CsvUtility
                     {
                         entry.title = csvParts[2].Trim('"');
                     }
-                    if (csvParts.Length >= 4)
-                    {
-                        entry.prompt = csvParts[3].Trim('"');
-                    }
-                    if (csvParts.Length >= 5)
-                    {
-                        entry.response = csvParts[4].Trim('"');
-                    }
+                    
                     if (csvParts.Length >= 6)
                     {
                         entry.reflection = csvParts[5].Trim('"');
