@@ -1,8 +1,5 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using CsvHelper;
-using System.Globalization;
 
 public class Scripture
 {
@@ -10,16 +7,7 @@ public class Scripture
 
     public Scripture(string filePath)
     {
-        LoadReferences(filePath);
-    }
-
-    private void LoadReferences(string filePath)
-    {
-        using (var reader = new StreamReader(filePath))
-        using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-        {
-            _references = new List<Reference>(csv.GetRecords<Reference>());
-        }
+        _references = Reference.LoadReferences(filePath);
     }
 
     public IEnumerable<string> GetDistinctVolumeTitles()

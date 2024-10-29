@@ -13,18 +13,17 @@ public class Program
         while (true)
         {
             ScriptureDisplay.DisplayVolumeOptions(volumes);
-
             string volumeChoice = Console.ReadLine();
             if (volumeChoice.ToLower() == "quit") break;
 
             var booksInVolume = scriptureReader.GetBooksInVolume(volumeChoice);
             ScriptureDisplay.DisplayBookOptions(booksInVolume);
-
             string bookChoice = Console.ReadLine();
+
             var chaptersInBook = scriptureReader.GetChaptersInBook(volumeChoice, bookChoice);
             ScriptureDisplay.DisplayChapterOptions(chaptersInBook);
-
             string chapterChoice = Console.ReadLine();
+
             Console.WriteLine("Choose the verse number or range (1 or 1-7):");
             string verseChoice = Console.ReadLine();
 
@@ -36,7 +35,6 @@ public class Program
                 ScriptureDisplay.HideWordsInScripture(scriptures.First());
             }
         }
-
         Console.WriteLine("The program ends!");
     }
 }

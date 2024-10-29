@@ -57,12 +57,9 @@ public class ScriptureDisplay
         {
             Console.WriteLine("\nPress Enter to hide some words...");
             Console.ReadLine();
-
             words = Word.HideWords(string.Join(' ', words), wordsToHide);
-
             Console.WriteLine(string.Join(' ', words));
         }
-
         Console.WriteLine("All words in the verse are now hidden.");
     }
 }
