@@ -1,24 +1,26 @@
 using System;
 using System.Collections.Generic;
 
-public class Word
+class Word
 {
-    public static List<string> HideWords(string text, int wordsToHide)
+    public string _text { get; set; }
+    public bool _isHidden { get; set; }
+
+    public Word(string text)
     {
-        List<string> words = new List<string>(text.Split(' '));
-        Random random = new Random();
+        _text = text;
+        _isHidden = false;
+    }
 
-        for (int i = 0; i < wordsToHide; i++)
-        {
-            int index = random.Next(words.Count);
-            while (words[index] == "___")
-            {
-                index = random.Next(words.Count);
-            }
-            words[index] = "___";
-        }
-
-        return words;
+    public void Hide()
+    {
+        _isHidden = true;
+    }
+    public override string ToString()
+    {
+        return _isHidden ? "___" : _text;
     }
 }
+
+
 

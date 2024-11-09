@@ -1,13 +1,23 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 public class Scripture
 {
     private List<Reference> _references;
+    private List<Word> _words;
 
     public Scripture(string filePath)
     {
-        _references = Reference.LoadReferences(filePath);
+        try
+        {
+            _references = Reference.LoadReferences(filePath);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading references from file: {ex.Message}");
+            _references = new List<Reference>();
+        }
     }
 
     public IEnumerable<string> GetDistinctVolumeTitles()
@@ -46,5 +56,33 @@ public class Scripture
                                      .ToList();
         }
         return scriptures;
+    }
+    public void SelectScriptureText(Reference reference)
+    {
+        _words = reference._scriptureText.Split(' ').Select(word => new Word(word)).ToList();
+    }
+
+    public void HideWordsInScripture(int wordsToHide = 2)
+    {
+        Random random = new Random();
+
+        while (_words.Count(w => !w._isHidden) > 0)
+        {
+            Console.WriteLine("\nPress Enter to hide some words...");
+            Console.ReadLine();
+
+            for (int i = 0; i < wordsToHide && _words.Any(w => !w._isHidden); i++)
+            {
+                int index = random.Next(_words.Count);
+                while (_words[index]._isHidden)
+                {
+                    index = random.Next(_words.Count);
+                }
+                _words[index].Hide();
+            }
+
+            Console.WriteLine(string.Join(' ', _words));
+        }
+        Console.WriteLine("All words in the verse are now hidden.");
     }
 }
