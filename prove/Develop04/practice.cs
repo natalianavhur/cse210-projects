@@ -1,189 +1,317 @@
 // using System;
 // using System.Collections.Generic;
-// using System.Reflection;
-// using System.Xml.Serialization;
-// using System.Diagnostics;
-// using System.Threading;
 
-
-// class Program2
+// public class Program
 // {
-//     static void Main()
+//     public static void Main(string[] args)
 //     {
+//         string filePath = "scriptures.csv";
+//         var scripture = new Scripture(filePath);
+//         var scriptureLibrary = new ScriptureLibrary(scripture);
 
-//         int choice = int.Parse(Console.ReadLine());
-//         if (choice == 1)
+//         while (true)
 //         {
+//             scriptureLibrary.DisplayVolumeOptions();
+//             string volumeChoice = Console.ReadLine();
+//             if (volumeChoice.ToLower() == "quit") break;
 
+//             scriptureLibrary.DisplayBookOptions(volumeChoice);
+//             string bookChoice = Console.ReadLine();
+
+//             scriptureLibrary.DisplayChapterOptions(volumeChoice, bookChoice);
+//             string chapterChoice = Console.ReadLine();
+
+//             Console.WriteLine("Choose the verse number or range (1 or 1-7):");
+//             string verseChoice = Console.ReadLine();
+
+//             var scriptures = scriptureLibrary.GetScripturesInRange(volumeChoice, bookChoice, chapterChoice, verseChoice);
+//             scriptureLibrary.DisplayScriptureTexts(scriptures);
+
+//             if (scriptures.Any())
+//             {
+//                 scripture.SelectScriptureText(scriptures.First());
+//                 scripture.HideWordsInScripture();
+//             }
 //         }
-//         else if (choice == 2)
-//         {
 
+//         Console.WriteLine("The program ends!");
+//     }
+
+// }
+
+// using System;
+// using System.Collections.Generic;
+// using System.IO;
+// using CsvHelper;
+// using System.Globalization;
+// using CsvHelper.Configuration.Attributes;
+// public class Reference
+// {
+//     [Name("volume_title")]
+//     private string _volumeTitle;
+//     public string VolumeTitle
+//     {
+//         get => _volumeTitle;
+//         set => _volumeTitle = value;
+//     }
+
+//     [Name("book_title")]
+//     private string _bookTitle;
+//     public string BookTitle
+//     {
+//         get => _bookTitle;
+//         set => _bookTitle = value;
+//     }
+
+//     [Name("chapter_number")]
+//     private string _chapterNumber;
+//     public string ChapterNumber
+//     {
+//         get => _chapterNumber;
+//         set => _chapterNumber = value;
+//     }
+
+//     [Name("verse_number")]
+//     private string _verseNumber;
+//     public string VerseNumber
+//     {
+//         get => _verseNumber;
+//         set => _verseNumber = value;
+//     }
+
+//     [Name("scripture_text")]
+//     private string _scriptureText;
+//     public string ScriptureText
+//     {
+//         get => _scriptureText;
+//         set => _scriptureText = value;
+//     }
+
+//     public static List<Reference> LoadReferences(string filePath)
+//     {
+//         try
+//         {
+//             using (var reader = new StreamReader(filePath))
+//             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+//             {
+//                 return new List<Reference>(csv.GetRecords<Reference>());
+//             }
 //         }
-//         else if (choice == 3)
+//         catch (Exception e)
 //         {
-
+//             Console.WriteLine($"Error loading references: {e.Message}");
+//             return new List<Reference>();
 //         }
-//         else if (choice == 4)
-//         {
-//             Console.WriteLine("Quitting Program.");
+//     }
+// }
 
+
+
+
+
+// using System;
+// using System.Collections.Generic;
+
+// public class Word
+// {
+//     private string _text;
+//     public string Text
+//     {
+//         get => _text;
+//         private set => _text = value;
+//     }
+
+//     private bool _isHidden;
+//     public bool IsHidden
+//     {
+//         get => _isHidden;
+//         private set => _isHidden = value;
+//     }
+
+//     public Word(string text)
+//     {
+//         Text = text;
+//         IsHidden = false;
+//     }
+
+//     public void Hide()
+//     {
+//         IsHidden = true;
+//     }
+
+//     public override string ToString()
+//     {
+//         return IsHidden ? "___" : Text;
+//     }
+// }
+
+
+
+// using System;
+// using System.Collections.Generic;
+// using System.Linq;
+
+// public class Scripture
+// {
+//     private List<Reference> _references;
+//     private List<Word> _words;
+
+//     public Scripture(string filePath)
+//     {
+//         try
+//         {
+//             _references = Reference.LoadReferences(filePath);
+//         }
+//         catch (Exception ex)
+//         {
+//             Console.WriteLine($"Error loading references from file: {ex.Message}");
+//             _references = new List<Reference>();
+//         }
+//     }
+
+//     public IEnumerable<string> GetDistinctVolumeTitles()
+//     {
+//         return _references.Select(r => r.VolumeTitle).Distinct();
+//     }
+
+//     public IEnumerable<string> GetBooksInVolume(string volumeTitle)
+//     {
+//         return _references.Where(r => r.VolumeTitle == volumeTitle)
+//                           .Select(r => r.BookTitle)
+//                           .Distinct();
+//     }
+
+//     public IEnumerable<string> GetChaptersInBook(string volumeTitle, string bookTitle)
+//     {
+//         return _references.Where(r => r.VolumeTitle == volumeTitle && r.BookTitle == bookTitle)
+//                           .Select(r => r.ChapterNumber)
+//                           .Distinct();
+//     }
+
+//     public List<Reference> GetScripturesInRange(string volumeTitle, string bookTitle, string chapterNumber, string verseRange)
+//     {
+//         var scriptures = new List<Reference>();
+
+//         if (verseRange.Contains("-"))
+//         {
+//             var range = verseRange.Split('-');
+//             int startVerse = int.Parse(range[0]);
+//             int endVerse = int.Parse(range[1]);
+
+//             scriptures = _references.Where(r => r.VolumeTitle == volumeTitle &&
+//                                                 r.BookTitle == bookTitle &&
+//                                                 r.ChapterNumber == chapterNumber &&
+//                                                 int.Parse(r.VerseNumber) >= startVerse &&
+//                                                 int.Parse(r.VerseNumber) <= endVerse)
+//                                     .ToList();
 //         }
 //         else
 //         {
-
+//             scriptures = _references.Where(r => r.VolumeTitle == volumeTitle &&
+//                                                 r.BookTitle == bookTitle &&
+//                                                 r.ChapterNumber == chapterNumber &&
+//                                                 r.VerseNumber == verseRange)
+//                                     .ToList();
 //         }
 
+//         return scriptures;
 //     }
 
-//     public void DisplayMenu()
+//     public void SelectScriptureText(Reference reference)
 //     {
-//         Console.WriteLine("Menu Options:");
-//         Console.WriteLine("1. Start breathing activity");
-//         Console.WriteLine("2. Start reflecting activity");
-//         Console.WriteLine("3. Start listing activities");
-//         Console.WriteLine("4. Quit");
-//         Console.Write("Select a choice from the menu:");
+//         _words = reference.ScriptureText.Split(' ')
+//                                          .Select(word => new Word(word))
+//                                          .ToList();
 //     }
 
-// }
-
-// class Activities
-// {
-//     protected string _name;
-//     protected string _description;
-//     protected int _duration;
-
-//     protected int _time;
-
-//     public Activities(string name, string description, int duration, int time)
+//     public void HideWordsInScripture(int wordsToHide = 2)
 //     {
-//         _name = name;
-//         _description = description;
-//         _duration = duration;
-//         _time = time;
-//     }
+//         Random random = new Random();
 
-//     public void StartMessage()
-//     {
-//         Console.WriteLine($" Welcome to the {_name}.");
-//         Console.WriteLine($"{_description}");
-//     }
-
-//     public void EndMessage()
-//     {
-
-//     }
-//     public void AnimateTime(int seconds)
-//     {
-
-//     }
-
-// }
-
-// class Breathing : Activities
-// {
-//     private int _inhaleDuration;
-//     private int _exhaleDuration;
-//     private string _animationType;
-
-//     DateTime startTime = DateTime.Now;
-//     Stopwatch stopwatch = Stopwatch.StartNew();
-
-//     public Breathing(string name, string description, int duration, int time) : base(name, description, duration, time)
-//     {
-//         _name = name;
-//         _duration = duration;
-//         _description = description;
-//         _time = time;
-//         // _inhaleDuration = duration / 2;
-//         // _exhaleDuration = duration / 2;
-//         // _animationType = 
-//     }
-//     public void DisplayMessage()
-//     {
-//         while (stopwatch.Elapsed.TotalSeconds < _duration)
+//         while (_words.Count(w => !w.IsHidden) > 0)
 //         {
-//             int remainingTime = _duration - (int)stopwatch.Elapsed.TotalSeconds;
-//             _inhaleDuration = 5;
-//             _exhaleDuration = 5;
-//             if (remainingTime == 5)
+//             Console.WriteLine("\nPress Enter to hide some words...");
+//             Console.ReadLine();
+
+//             for (int i = 0; i < wordsToHide && _words.Any(w => !w.IsHidden); i++)
 //             {
-//                 Console.WriteLine($"Inhale:");
-//             }
-//             else if (remainingTime % 10 == 0)
-//             {
-//                 Console.WriteLine($"Exhale:");
+//                 int index = random.Next(_words.Count);
+//                 while (_words[index].IsHidden)
+//                 {
+//                     index = random.Next(_words.Count);
+//                 }
+//                 _words[index].Hide();
 //             }
 
+//             Console.WriteLine(string.Join(' ', _words));
 //         }
-//         stopwatch.Stop();
-//         Console.WriteLine("Time is up. The bretahing task has finished.");
 
+//         Console.WriteLine("All words in the verse are now hidden.");
 //     }
-
-
 // }
 
-// class Listing : Activities
+// using System;
+// using System.Collections.Generic;
+// using System.Linq;
+
+// public class ScriptureLibrary
 // {
-//     private List<string> prompts = new List<string>();
-//     private Random random = new Random();
+//     private Scripture _scripture;
 
-//     public Listing(string name, string description, int duration, int time) : base(name, description, duration, time)
+//     public ScriptureLibrary(Scripture scripture)
 //     {
-//         _name = name;
-//         _duration = duration;
-//         _description = description;
-//         _time = time;
-//     }
-//     public string GetRandomPrompt()
-//     {
-//         int promptIndex = random.Next(0, prompts.Count);
-//         return prompts[promptIndex];
-
-//     }
-//     public void DisplayRandomPrompt()
-//     {
-
-
+//         _scripture = scripture;
 //     }
 
+//     public void DisplayVolumeOptions()
+//     {
+//         var volumes = _scripture.GetDistinctVolumeTitles();
+//         Console.WriteLine("Choose one of the following volume titles or type 'quit' to exit:");
+//         foreach (var volume in volumes)
+//         {
+//             Console.WriteLine(volume);
+//         }
+//     }
+
+//     public void DisplayBookOptions(string volumeTitle)
+//     {
+//         var books = _scripture.GetBooksInVolume(volumeTitle);
+//         Console.WriteLine("Choose one of the following book titles:");
+//         foreach (var book in books)
+//         {
+//             Console.WriteLine(book);
+//         }
+//     }
+
+//     public void DisplayChapterOptions(string volumeTitle, string bookTitle)
+//     {
+//         var chapters = _scripture.GetChaptersInBook(volumeTitle, bookTitle);
+//         Console.WriteLine("Choose one of the following chapter numbers:");
+//         foreach (var chapter in chapters)
+//         {
+//             Console.WriteLine(chapter);
+//         }
+//     }
+
+//     public void DisplayScriptureTexts(List<Reference> scriptures)
+//     {
+//         if (scriptures.Any())
+//         {
+//             Console.WriteLine("Scripture Texts:");
+//             foreach (var scripture in scriptures)
+//             {
+//                 Console.WriteLine(scripture.ScriptureText);
+//             }
+//         }
+//         else
+//         {
+//             Console.WriteLine("Scripture not found.");
+//         }
+//     }
+
+//     public List<Reference> GetScripturesInRange(string volumeTitle, string bookTitle, string chapterNumber, string verseRange)
+//     {
+//         return _scripture.GetScripturesInRange(volumeTitle, bookTitle, chapterNumber, verseRange);
+//     }
 // }
 
-// class Reflecting : Activities
-// {
-//     private List<string> prompts = new List<string>();
-//     private List<string> questions = new List<string>();
-//     private Random random = new Random();
-
-//     public Reflecting(string name, string description, int duration, int time) : base(name, description, duration, time)
-//     {
-//         _name = name;
-//         _duration = duration;
-//         _description = description;
-//         _time = time;
-//     }
-//     public string GetPrompt()
-//     {
-//         int promptIndex = random.Next(0, prompts.Count);
-//         return prompts[promptIndex];
-
-//     }
-//     public void DisplayPrompt()
-//     {
-
-//     }
-
-//     public string GetQuestion()
-//     {
-//         int questionIndex = random.Next(0, questions.Count);
-//         return questions[questionIndex];
-//     }
-
-//     public void DisplayQuestion()
-//     {
-
-//     }
-
-// }

@@ -21,9 +21,9 @@ public class ScriptureLibrary
         }
     }
 
-    public void DisplayBookOptions(string _volumeTitle)
+    public void DisplayBookOptions(string volumeTitle)
     {
-        var books = _scripture.GetBooksInVolume(_volumeTitle);
+        var books = _scripture.GetBooksInVolume(volumeTitle);
         Console.WriteLine("Choose one of the following book titles:");
         foreach (var book in books)
         {
@@ -48,7 +48,7 @@ public class ScriptureLibrary
             Console.WriteLine("Scripture Texts:");
             foreach (var scripture in scriptures)
             {
-                Console.WriteLine(scripture._scriptureText);
+                Console.WriteLine(scripture.ScriptureText);
             }
         }
         else
@@ -56,8 +56,10 @@ public class ScriptureLibrary
             Console.WriteLine("Scripture not found.");
         }
     }
+
     public List<Reference> GetScripturesInRange(string volumeTitle, string bookTitle, string chapterNumber, string verseRange)
     {
         return _scripture.GetScripturesInRange(volumeTitle, bookTitle, chapterNumber, verseRange);
     }
 }
+

@@ -1,24 +1,36 @@
 using System;
 using System.Collections.Generic;
 
-class Word
+public class Word
 {
-    public string _text { get; set; }
-    public bool _isHidden { get; set; }
+    private string _text;
+    public string Text
+    {
+        get => _text;
+        private set => _text = value;
+    }
+
+    private bool _isHidden;
+    public bool IsHidden
+    {
+        get => _isHidden;
+        private set => _isHidden = value;
+    }
 
     public Word(string text)
     {
-        _text = text;
-        _isHidden = false;
+        Text = text;
+        IsHidden = false;
     }
 
     public void Hide()
     {
-        _isHidden = true;
+        IsHidden = true;
     }
+
     public override string ToString()
     {
-        return _isHidden ? "___" : _text;
+        return IsHidden ? "___" : Text;
     }
 }
 

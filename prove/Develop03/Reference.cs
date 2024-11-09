@@ -4,24 +4,47 @@ using System.IO;
 using CsvHelper;
 using System.Globalization;
 using CsvHelper.Configuration.Attributes;
-
 public class Reference
 {
     [Name("volume_title")]
-    public string _volumeTitle { get; set; }
+    private string _volumeTitle;
+    public string VolumeTitle
+    {
+        get => _volumeTitle;
+        set => _volumeTitle = value;
+    }
 
     [Name("book_title")]
-    public string _bookTitle { get; set; }
+    private string _bookTitle;
+    public string BookTitle
+    {
+        get => _bookTitle;
+        set => _bookTitle = value;
+    }
 
     [Name("chapter_number")]
-    public string _chapterNumber { get; set; }
+    private string _chapterNumber;
+    public string ChapterNumber
+    {
+        get => _chapterNumber;
+        set => _chapterNumber = value;
+    }
 
     [Name("verse_number")]
-    public string _verseNumber { get; set; }
+    private string _verseNumber;
+    public string VerseNumber
+    {
+        get => _verseNumber;
+        set => _verseNumber = value;
+    }
 
     [Name("scripture_text")]
-    public string _scriptureText { get; set; }
-
+    private string _scriptureText;
+    public string ScriptureText
+    {
+        get => _scriptureText;
+        set => _scriptureText = value;
+    }
 
     public static List<Reference> LoadReferences(string filePath)
     {
@@ -38,8 +61,10 @@ public class Reference
             Console.WriteLine($"Error loading references: {e.Message}");
             return new List<Reference>();
         }
-
-
     }
 }
+
+
+
+
 

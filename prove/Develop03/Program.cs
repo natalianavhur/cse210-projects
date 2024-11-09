@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-public class Program 
+public class Program
 {
     public static void Main(string[] args)
     {
@@ -33,8 +33,8 @@ public class Program
                 scripture.HideWordsInScripture();
             }
         }
-        Console.WriteLine("The program ends!");
 
-        
+        Console.WriteLine("The program ends!");
     }
+
 }
