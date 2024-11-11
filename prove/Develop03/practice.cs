@@ -1,3 +1,102 @@
+// class Program
+// {
+//     static void Main(string[] args)
+//     {
+//         bool continueProgram = true;
+
+//         while (continueProgram)
+//         {
+//             Console.Clear();
+//             Console.WriteLine("Main Menu");
+//             Console.WriteLine("1. Start Activity");
+//             Console.WriteLine("2. View Activity History");
+//             Console.WriteLine("3. Exit");
+//             Console.Write("Please choose an option: ");
+
+//             string choice = Console.ReadLine();
+
+//             switch (choice)
+//             {
+//                 case "1":
+//                     // Choose which activity to start
+//                     Console.Clear();
+//                     Console.WriteLine("Choose an activity to start:");
+//                     Console.WriteLine("1. Breathing");
+//                     Console.WriteLine("2. Reflecting");
+//                     Console.WriteLine("3. Listing");
+//                     Console.Write("Please choose an option: ");
+//                     string activityChoice = Console.ReadLine();
+
+//                     Activities activity = null;
+
+//                     // Initialize the chosen activity
+//                     switch (activityChoice)
+//                     {
+//                         case "1":
+//                             activity = new Breathing("Breathing", "A breathing activity for relaxation");
+//                             break;
+//                         case "2":
+//                             activity = new Reflecting("Reflecting", "A reflection activity to relax and reflect");
+//                             break;
+//                         case "3":
+//                             activity = new Listing("Listing", "A listing activity to organize thoughts");
+//                             break;
+//                         default:
+//                             Console.WriteLine("Invalid choice, returning to main menu.");
+//                             continue;
+//                     }
+
+//                     // Start the chosen activity
+//                     activity.StartMessage();
+//                     Console.WriteLine("Preparing...");
+//                     activity.AnimateTime(5); // Short preparation animation
+
+//                     // Get the duration for the activity
+//                     activity.GetDuration();
+
+//                     // Perform activity-specific actions based on the type of activity
+//                     if (activity is Breathing breathingActivity)
+//                     {
+//                         Console.Clear();
+//                         Console.WriteLine("Get Ready");
+//                         activity.AnimateTime(5); // Get ready animation for breathing
+//                         breathingActivity.StartBreathing();
+//                     }
+//                     else if (activity is Reflecting reflectingActivity)
+//                     {
+//                         reflectingActivity.StartReflecting();
+//                     }
+//                     else if (activity is Listing listingActivity)
+//                     {
+//                         listingActivity.StartListing();
+//                     }
+
+//                     // End the activity and log it
+//                     activity.EndMessage();
+//                     activity.LogActivity();
+//                     break;
+
+//                 case "2":
+//                     // Display the history of activities
+//                     Activities.DisplayHistory();
+//                     Console.WriteLine("\nPress any key to return to the main menu.");
+//                     Console.ReadKey();
+//                     break;
+
+//                 case "3":
+//                     continueProgram = false;
+//                     break;
+
+//                 default:
+//                     Console.WriteLine("Invalid choice. Please try again.");
+//                     break;
+//             }
+//         }
+//     }
+// }
+
+
+
 // using System;
 // using System.Collections.Generic;
 

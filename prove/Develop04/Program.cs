@@ -4,186 +4,101 @@ using System.Reflection;
 using System.Xml.Serialization;
 using System.Diagnostics;
 using System.Threading;
-
+using CsvHelper.Configuration.Attributes;
+using System.Reflection.Metadata.Ecma335;
+using System.ComponentModel;
+using System.Net;
 
 class Program
 {
-    static void Main()
+    static void Main(string[] args)
     {
+        bool continueProgram = true;
 
-        int choice = int.Parse(Console.ReadLine());
-        if (choice == 1)
+        while (continueProgram)
         {
+            Console.Clear();
+            Console.WriteLine("Main Menu");
+            Console.WriteLine("   1. Start Activity");
+            Console.WriteLine("   2. View Activity History");
+            Console.WriteLine("   3. Exit");
+            Console.Write("Select a choice from the menu: ");
 
-        }
-        else if (choice == 2)
-        {
+            string choice = Console.ReadLine();
 
-        }
-        else if (choice == 3)
-        {
-
-        }
-        else if (choice == 4)
-        {
-            Console.WriteLine("Quitting Program.");
-
-        }
-        else
-        {
-
-        }
-
-    }
-
-    public void DisplayMenu()
-    {
-        Console.WriteLine("Menu Options:");
-        Console.WriteLine("1. Start breathing activity");
-        Console.WriteLine("2. Start reflecting activity");
-        Console.WriteLine("3. Start listing activities");
-        Console.WriteLine("4. Quit");
-        Console.Write("Select a choice from the menu:");
-    }
-
-}
-
-class Activities
-{
-    protected string _name;
-    protected string _description;
-    protected int _duration;
-
-    protected int _time;
-
-    public Activities(string name, string description, int duration, int time)
-    {
-        _name = name;
-        _description = description;
-        _duration = duration;
-        _time = time;
-    }
-
-    public void StartMessage()
-    {
-        Console.WriteLine($" Welcome to the {_name}.");
-        Console.WriteLine($"{_description}");
-    }
-
-    public void EndMessage()
-    {
-
-    }
-    public void AnimateTime(int seconds)
-    {
-
-    }
-
-}
-
-class Breathing : Activities
-{
-    private int _inhaleDuration;
-    private int _exhaleDuration;
-    private string _animationType;
-
-    DateTime startTime = DateTime.Now;
-    Stopwatch stopwatch = Stopwatch.StartNew();
-
-    public Breathing(string name, string description, int duration, int time) : base(name, description, duration, time)
-    {
-        _name = name;
-        _duration = duration;
-        _description = description;
-        _time = time;
-        // _inhaleDuration = duration / 2;
-        // _exhaleDuration = duration / 2;
-        // _animationType = 
-    }
-    public void DisplayMessage()
-    {
-        while (stopwatch.Elapsed.TotalSeconds < _duration)
-        {
-            int remainingTime = _duration - (int)stopwatch.Elapsed.TotalSeconds;
-            _inhaleDuration = 5;
-            _exhaleDuration = 5;
-            if (remainingTime == 5)
+            switch (choice)
             {
-                Console.WriteLine($"Inhale:");
-            }
-            else if (remainingTime % 10 == 0)
-            {
-                Console.WriteLine($"Exhale:");
-            }
+                case "1":
+                    Console.Clear();
+                    Console.WriteLine("Choose an activity to start:");
+                    Console.WriteLine("1. Breathing");
+                    Console.WriteLine("2. Reflecting");
+                    Console.WriteLine("3. Listing");
+                    Console.Write("Select a choice from the menu: ");
+                    string activityChoice = Console.ReadLine();
 
+                    Activities activity = null;
+
+                    switch (activityChoice)
+                    {
+                        case "1":
+                            Console.Clear();
+                            activity = new Breathing("Breathing", "This activity will help you relax by walking your through breathing in and out slowly. Clear your mind and focus on your breathing.");
+                            break;
+                        case "2":
+                            Console.Clear();
+                            activity = new Reflecting("Reflecting", "This activity will help you reflect on times in your life when you have shown strength and resilience. This will help you recognize the power you have and how you can use it in other aspects of your life.");
+                            break;
+                        case "3":
+                            Console.Clear();
+                            activity = new Listing("Listing", "This activity will help you reflect on the good things in your life by having you list as many things as you can in a certain area.");
+                            break;
+                        default:
+                            Console.WriteLine("Invalid choice, returning to main menu.");
+                            continue;
+                    }
+
+                    activity.StartMessage();
+                    Console.WriteLine("Preparing...");
+                    activity.AnimateTime(5);
+                    activity.GetDuration();
+
+                    if (activity is Breathing breathingActivity)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Get Ready ...");
+                        activity.AnimateTime(5);
+                        breathingActivity.StartBreathing();
+                    }
+                    else if (activity is Reflecting reflectingActivity)
+                    {
+                        Console.Clear();
+                        reflectingActivity.StartReflecting();
+                    }
+                    else if (activity is Listing listingActivity)
+                    {
+                        Console.Clear();
+                        listingActivity.StartListing();
+                    }
+
+                    activity.EndMessage();
+                    activity.LogActivity();
+                    break;
+
+                case "2":
+                    Activities.DisplayHistory();
+                    Console.WriteLine("\nPress any key to return to the main menu.");
+                    Console.ReadKey();
+                    break;
+
+                case "3":
+                    continueProgram = false;
+                    break;
+
+                default:
+                    Console.WriteLine("Invalid choice. Please try again.");
+                    break;
+            }
         }
-        stopwatch.Stop();
-        Console.WriteLine("Time is up. The bretahing task has finished.");
-
     }
-
-
-}
-
-class Listing : Activities
-{
-    private List<string> prompts = new List<string>();
-    private Random random = new Random();
-
-    public Listing(string name, string description, int duration, int time) : base(name, description, duration, time)
-    {
-        _name = name;
-        _duration = duration;
-        _description = description;
-        _time = time;
-    }
-    public string GetRandomPrompt()
-    {
-        int promptIndex = random.Next(0, prompts.Count);
-        return prompts[promptIndex];
-
-    }
-    public void DisplayRandomPrompt()
-    {
-
-
-    }
-
-}
-
-class Reflecting : Activities
-{
-    private List<string> prompts = new List<string>();
-    private List<string> questions = new List<string>();
-    private Random random = new Random();
-
-    public Reflecting(string name, string description, int duration, int time) : base(name, description, duration, time)
-    {
-        _name = name;
-        _duration = duration;
-        _description = description;
-        _time = time;
-    }
-    public string GetPrompt()
-    {
-        int promptIndex = random.Next(0, prompts.Count);
-        return prompts[promptIndex];
-
-    }
-    public void DisplayPrompt()
-    {
-
-    }
-
-    public string GetQuestion()
-    {
-        int questionIndex = random.Next(0, questions.Count);
-        return questions[questionIndex];
-    }
-
-    public void DisplayQuestion()
-    {
-
-    }
-
 }
