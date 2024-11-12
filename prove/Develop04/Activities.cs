@@ -3,12 +3,13 @@ class Activities
     protected string _name;
     protected string _description;
     protected int _duration;
-    protected int _time;
+    protected DateTime _time;
 
     public Activities(string name, string description)
     {
         _name = name;
         _description = description;
+        _time = DateTime.Now;
     }
 
     public void StartMessage()
@@ -51,7 +52,7 @@ class Activities
             writer.WriteLine($"Activity: {_name}");
             writer.WriteLine($"Description: {_description}");
             writer.WriteLine($"Duration: {_duration} seconds");
-            writer.WriteLine($"Time: {DateTime.Now}");
+            writer.WriteLine($"Time: {_time}");
             writer.WriteLine(new string('-', 50));
         }
     }
