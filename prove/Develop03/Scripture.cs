@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+
 public class Scripture
 {
     private List<Reference> _references;
@@ -81,6 +82,10 @@ public class Scripture
 
         while (_words.Count(w => !w.IsHidden) > 0)
         {
+            Console.Clear();
+            Console.WriteLine("Current Scripture:");
+            Console.WriteLine(string.Join(' ', _words));
+
             Console.WriteLine("\nPress Enter to hide some words...");
             Console.ReadLine();
 
@@ -94,9 +99,11 @@ public class Scripture
                 _words[index].Hide();
             }
 
+            Console.Clear();
+            Console.WriteLine("Updated Scripture:");
             Console.WriteLine(string.Join(' ', _words));
         }
 
-        Console.WriteLine("All words in the verse are now hidden.");
+        Console.WriteLine("\nAll words in the verse are now hidden.");
     }
 }

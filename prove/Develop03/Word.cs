@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+
 public class Word
 {
     private string _text;
@@ -33,6 +34,7 @@ public class Word
         return IsHidden ? "___" : Text;
     }
 }
+
 
 
 
