@@ -86,7 +86,7 @@ public class Scripture
             Console.WriteLine("Current Scripture:");
             Console.WriteLine(string.Join(' ', _words));
 
-            Console.WriteLine("\nPress Enter to hide some words...");
+            Console.WriteLine("\nPress enter to continue or type 'quit' to finish:");
             Console.ReadLine();
 
             for (int i = 0; i < wordsToHide && _words.Any(w => !w.IsHidden); i++)
