@@ -1,71 +1,51 @@
-// using System;
-// using System.Diagnostics;
-// using System.Runtime.CompilerServices;
+using System;
 
-// class Program
-// {
-//     static void Main(string[] args)
-//     {
-//         List<string> gList = new List<string>();
-//         bool condition = true;
-
-//         while (condition)
-//         {
-//             Console.Write("Add Item:");
-//             string item = Console.ReadLine();
-//             if ("no" == item)
-//             {
-//                 condition = false;
-//             }
-//             else
-//             {
-//                 gList.Add(item);
-//             }
-
-//         }
-//         Console.WriteLine("Grocery List:");
-//         foreach (string item in gList)
-//         {
-//             Console.WriteLine($"*{item}");
-//         }
-//     }
-// }
-public class Car
+public class Program
 {
-    public string Make { get; set; }
-    public string Model { get; set; }
-    public int Year { get; set; }
-
-    // Constructor 1: No parameters
-    public Car() : this("Unknown", "Unknown", 0)
+    public static void Main(string[] args)
     {
-    }
+        // Create smart devices
+        var light1 = new SmartLight("Living Room Light");
+        var heater1 = new SmartHeater("Bedroom Heater");
+        var tv1 = new SmartTV("Living Room TV");
 
-    // Constructor 2: Two parameters
-    public Car(string make, string model) : this(make, model, 0)
-    {
-    }
+        // Create rooms and add devices
+        var livingRoom = new Room("Living Room");
+        livingRoom.AddDevice(light1);
+        livingRoom.AddDevice(tv1);
 
-    // Constructor 3: Three parameters
-    public Car(string make, string model, int year)
-    {
-        Make = make;
-        Model = model;
-        Year = year;
-    }
-}
+        var bedroom = new Room("Bedroom");
+        bedroom.AddDevice(heater1);
 
-class Program
-{
-    static void Main(string[] args)
-    {
-        Car car1 = new Car();
-        Car car2 = new Car("Toyota", "Corolla");
-        Car car3 = new Car("Honda", "Civic", 2020);
+        // Create house and add rooms
+        var house = new House();
+        house.AddRoom(livingRoom);
+        house.AddRoom(bedroom);
 
-        Console.WriteLine(car1.Make, car1.Model, car1.Year);
-        Console.WriteLine(car2.Make, car2.Model, car2.Year);
-        Console.WriteLine(car3.Make, car3.Model, car3.Year);
+        // Turn on some devices
+        livingRoom.TurnOnDevice("Living Room Light");
+        bedroom.TurnOnAllDevices();
 
+        // Wait for a while
+        System.Threading.Thread.Sleep(2000);
+
+        // Report status of all items
+        Console.WriteLine("All Items:");
+        Console.WriteLine(house.ReportAllItems());
+
+        // Report items that are on
+        Console.WriteLine("\nItems On:");
+        Console.WriteLine(house.ReportItemsOn());
+
+        // Report item that has been on the longest
+        Console.WriteLine("\nItem On Longest:");
+        Console.WriteLine(house.ReportItemOnLongest());
+
+        // Turn off all devices in the living room
+        livingRoom.TurnOffAllDevices();
+
+        // Report status again
+        Console.WriteLine("\nAll Items After Turning Off Living Room Devices:");
+        Console.WriteLine(house.ReportAllItems());
     }
 }
