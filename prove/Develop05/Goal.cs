@@ -1,54 +1,58 @@
 using System;
-using System.Text.Json;
 
 public abstract class Goal
 {
-    protected string _name;
-    protected string _description;
-    protected int _points;
-    protected bool _isCompleted;
+    private string name;
+    private string description;
+    private int points;
+    private int completionCount;
+    private DateTime dueDate;
 
     public string Name
     {
-        get => _name;
-        set => _name = value;
+        get { return name; }
+        set { name = value; }
     }
 
     public string Description
     {
-        get => _description;
-        set => _description = value;
+        get { return description; }
+        set { description = value; }
     }
 
     public int Points
     {
-        get => _points;
-        set => _points = value;
+        get { return points; }
+        set { points = value; }
     }
 
-    public bool IsCompleted
+    public int CompletionCount
     {
-        get => _isCompleted;
-        set => _isCompleted = value;
+        get { return completionCount; }
+        set { completionCount = value; }
     }
 
-    public Goal(string name, string description, int points)
+    public DateTime DueDate
     {
-        _name = name;
-        _description = description;
-        _points = points;
+        get { return dueDate; }
+        set { dueDate = value; }
     }
 
-    public abstract void RecordEvent();
+    public Goal(string name, string description, int points, DateTime dueDate)
+    {
+        this.name = name;
+        this.description = description;
+        this.points = points;
+        completionCount = 0;
+        this.dueDate = dueDate;
+    }
+
+    public abstract int RecordEvent();
+    public abstract bool CanComplete();
     public abstract string GetStatus();
 
-    public virtual void Serialize()
+    public bool IsDueSoon(int daysBeforeDue)
     {
-
-    }
-
-    public void Display()
-    {
-        Console.WriteLine($"Stub: Display called for goal {_name}.");
+        return (dueDate - DateTime.Now).TotalDays <= daysBeforeDue;
     }
 }

@@ -1,16 +1,21 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 class GoalManager
 {
-    private List<Goal> _goals = new List<Goal>();
-    private int _score = 0;
+    private List<Goal> goals = new List<Goal>();
+    private int score = 0;
 
     public void AddGoal()
     {
-        Console.WriteLine("The types of Goal are:");
+        Console.WriteLine("\nThe types of goals are:");
         Console.WriteLine("1. Simple Goal");
         Console.WriteLine("2. Eternal Goal");
         Console.WriteLine("3. Checklist Goal");
-        Console.WriteLine("Which type of goal would you like to create?");
+        Console.Write("Which type of goal would you like to create? ");
 
         string choice = Console.ReadLine();
         Goal newGoal = null;
@@ -33,86 +38,194 @@ class GoalManager
 
         if (newGoal != null)
         {
-            _goals.Add(newGoal);
-            SerializeGoal(newGoal);
-            Console.WriteLine("Goal created and saved successfully.");
+            goals.Add(newGoal);
+            Console.WriteLine("Goal created successfully.");
         }
-
     }
 
     private SimpleGoal CreateSimpleGoal()
     {
-        Console.WriteLine("What is the name of your goal? ");
+        Console.Write("Enter the name of the goal: ");
         string name = Console.ReadLine();
 
-        Console.WriteLine("Enter the description of the goal:");
+        Console.Write("Enter a short description: ");
         string description = Console.ReadLine();
 
-        Console.WriteLine("Enter the points for this goal:");
+        Console.Write("Enter the points awarded upon completion: ");
         int points = int.Parse(Console.ReadLine());
 
-        return new SimpleGoal(name, description, points);
+        Console.Write("Enter the due date (yyyy-mm-dd): ");
+        DateTime dueDate = DateTime.Parse(Console.ReadLine());
+
+        return new SimpleGoal(name, description, points, dueDate);
     }
 
     private EternalGoal CreateEternalGoal()
     {
-        Console.WriteLine("What is the name of your goal? ");
+        Console.Write("Enter the name of the goal: ");
         string name = Console.ReadLine();
 
-        Console.WriteLine("What is a short description ");
+        Console.Write("Enter a short description: ");
         string description = Console.ReadLine();
 
-        Console.WriteLine("Enter the points for this eternal goal:");
+        Console.Write("Enter the points awarded each time it is recorded: ");
         int points = int.Parse(Console.ReadLine());
 
-        return new EternalGoal(name, description, points);
+        Console.Write("Enter the due date (yyyy-mm-dd): ");
+        DateTime dueDate = DateTime.Parse(Console.ReadLine());
+
+        return new EternalGoal(name, description, points, dueDate);
     }
 
     private ChecklistGoal CreateChecklistGoal()
     {
-        Console.WriteLine("What is the name of your goal? ");
+        Console.Write("Enter the name of the goal: ");
         string name = Console.ReadLine();
 
-        Console.WriteLine("Enter the description of the checklist goal:");
+        Console.Write("Enter a short description: ");
         string description = Console.ReadLine();
 
-        Console.WriteLine("Enter the points for this checklist goal:");
+        Console.Write("Enter the points awarded each time it is recorded: ");
         int points = int.Parse(Console.ReadLine());
 
-        Console.WriteLine("Enter the total number of times to complete the goal:");
-        int totalTimes = int.Parse(Console.ReadLine());
+        Console.Write("Enter the number of times to complete the goal: ");
+        int targetCount = int.Parse(Console.ReadLine());
 
-        return new ChecklistGoal(name, description, points, totalTimes);
-    }
+        Console.Write("Enter the bonus points upon completing the goal: ");
+        int bonusPoints = int.Parse(Console.ReadLine());
 
-    private void SerializeGoal(Goal goal)
-    {
-        string jsonString = JsonSerializer.Serialize(goal);
-        Console.WriteLine("Serialized Goal:");
-        Console.WriteLine(jsonString);
+        Console.Write("Enter the due date (yyyy-mm-dd): ");
+        DateTime dueDate = DateTime.Parse(Console.ReadLine());
 
-        // Here you can save the JSON string to a file or database
-        System.IO.File.AppendAllText("goals.json", jsonString + Environment.NewLine);
+        return new ChecklistGoal(name, description, points, targetCount, bonusPoints, dueDate);
     }
 
     public void DisplayGoals()
     {
-        Console.WriteLine("Stub: DisplayGoals called.");
+        Console.WriteLine("\nYour Goals:");
+        foreach (var goal in goals)
+        {
+            Console.WriteLine(goal.GetStatus());
+        }
+        Console.WriteLine($"Current Score: {score}");
     }
 
-    public int GetScore()
+    public void RecordEvent()
     {
-        Console.WriteLine("Stub: GetScore called.");
-        return _score;
+        var completableGoals = goals.Where(g => g.CanComplete()).ToList();
+
+        if (completableGoals.Count == 0)
+        {
+            Console.WriteLine("No goals available to complete."); return;
+        }
+
+        Console.WriteLine("\nSelect a goal to record:");
+        for (int i = 0; i < goals.Count; i++)
+        {
+            Console.WriteLine($"{i + 1}. {goals[i].Name}");
+        }
+
+        int choice = int.Parse(Console.ReadLine()) - 1;
+
+        if (choice >= 0 && choice < goals.Count)
+        {
+            score += goals[choice].RecordEvent();
+            Console.WriteLine("Event recorded successfully.");
+        }
+        else
+        {
+            Console.WriteLine("Invalid choice.");
+        }
     }
 
     public void SaveGoals()
     {
-        Console.WriteLine("Stub: SaveGoals called.");
+        var options = new JsonSerializerOptions
+        {
+            Converters = { new GoalConverter() },
+            WriteIndented = true
+        };
+
+        string jsonString = JsonSerializer.Serialize(goals, options);
+        Console.Write("What is the name of the file: ");
+        string filename = Console.ReadLine().Trim();
+        File.WriteAllText(filename, jsonString);
+        Console.WriteLine("Goals saved successfully.");
     }
 
     public void LoadGoals(string filename)
     {
-        Console.WriteLine($"Stub: LoadGoals called with filename '{filename}'.");
+        if (File.Exists(filename))
+        {
+            var options = new JsonSerializerOptions
+            {
+                Converters = { new GoalConverter() }
+            };
+
+            string jsonFromFile = File.ReadAllText(filename);
+            goals = JsonSerializer.Deserialize<List<Goal>>(jsonFromFile, options);
+            Console.WriteLine("Goals loaded successfully.");
+        }
+        else
+        {
+            Console.WriteLine($"File '{filename}' does not exist.");
+        }
+    }
+
+    private void CalculateScore()
+    {
+        score = goals.Sum(goal => goal.Points * goal.CompletionCount);
+    }
+
+    public void DisplayReminders(int daysBeforeDue)
+    {
+        Console.WriteLine("\nReminders for Goals Due Soon:");
+        foreach (var goal in goals.Where(g => g.IsDueSoon(daysBeforeDue)))
+        {
+            Console.WriteLine(goal.GetStatus());
+        }
+    }
+
+
+    private class GoalConverter : JsonConverter<Goal>
+    {
+        public override Goal Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            using (var jsonDoc = JsonDocument.ParseValue(ref reader))
+            {
+                var root = jsonDoc.RootElement;
+
+                if (!root.TryGetProperty("Type", out var typeProperty))
+                {
+                    throw new JsonException("The 'Type' property is missing in the JSON data.");
+                }
+
+                var type = typeProperty.GetString();
+                return type switch
+                {
+                    "SimpleGoal" => JsonSerializer.Deserialize<SimpleGoal>(root.GetRawText(), options),
+                    "EternalGoal" => JsonSerializer.Deserialize<EternalGoal>(root.GetRawText(), options),
+                    "ChecklistGoal" => JsonSerializer.Deserialize<ChecklistGoal>(root.GetRawText(), options),
+                    _ => throw new NotSupportedException($"Goal type '{type}' is not supported."),
+                };
+            }
+        }
+
+
+        public override void Write(Utf8JsonWriter writer, Goal value, JsonSerializerOptions options)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("Type", value.GetType().Name);
+
+            var json = JsonSerializer.Serialize(value, value.GetType(), options);
+            using (var jsonDoc = JsonDocument.Parse(json))
+            {
+                foreach (var property in jsonDoc.RootElement.EnumerateObject())
+                {
+                    property.WriteTo(writer);
+                }
+            }
+            writer.WriteEndObject();
+        }
     }
 }

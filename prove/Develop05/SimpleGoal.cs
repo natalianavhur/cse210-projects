@@ -1,34 +1,29 @@
-using System;
-using System.Text.Json;
-
-class SimpleGoal : Goal
+public class SimpleGoal : Goal
 {
-    public SimpleGoal(string name, string description, int points) : base(name, description, points)
+    private bool _isCompleted = false;
+
+    public SimpleGoal(string name, string description, int points, DateTime dueDate)
+        : base(name, description, points, dueDate) { }
+
+    public override int RecordEvent()
     {
+        if (!_isCompleted)
+        {
+            _isCompleted = true;
+            CompletionCount++;
+            return Points;
+        }
+        Console.WriteLine("Goal already completed.");
+        return 0;
     }
 
-    public override void RecordEvent()
+    public override bool CanComplete()
     {
-        Name = Console;
-        Description = "mmm";
-        base.Points = 20;
-        base.IsCompleted = false;
+        return !_isCompleted;
     }
 
     public override string GetStatus()
     {
-        Console.WriteLine("Stub: GetStatus called for SimpleGoal.");
-        return $"SimpleGoal: {Name}, Points: {Points}, Completed: {IsCompleted}";
-        // return "[ ]";
-    }
-
-    public override void Serialize()
-    {
-
-        // var goal = new SimpleGoal("mmm", "mmm", 20) { IsCompleted = false };
-
-        string jsonString = JsonSerializer.Serialize(this);
-        Console.WriteLine("serialization");
-        Console.WriteLine(jsonString);
+        return $"{(_isCompleted ? "[X]" : "[ ]")} Simple Goal: {Name} - {Description} ({Points} points, Completed {CompletionCount} times, Due: {DueDate.ToShortDateString()})";
     }
 }

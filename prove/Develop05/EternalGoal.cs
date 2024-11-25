@@ -1,18 +1,22 @@
 
-class EternalGoal : Goal
+public class EternalGoal : Goal
 {
-    public EternalGoal(string name, string description, int points) : base(name, description, points)
+    public EternalGoal(string name, string description, int points, DateTime dueDate)
+        : base(name, description, points, dueDate) { }
+
+    public override int RecordEvent()
     {
+        CompletionCount++;
+        return Points;
     }
 
-    public override void RecordEvent()
+    public override bool CanComplete()
     {
-        Console.WriteLine("Stub: RecordEvent called for EternalGoal.");
+        return true;
     }
 
     public override string GetStatus()
     {
-        Console.WriteLine("Stub: GetStatus called for EternalGoal.");
-        return "[ ]";
+        return $"[ ] Eternal Goal: {Name} - {Description} ({Points} points each time, Completed {CompletionCount} times, Due: {DueDate.ToShortDateString()})";
     }
 }
