@@ -24,6 +24,6 @@ public class SimpleGoal : Goal
 
     public override string GetStatus()
     {
-        return $"{(_isCompleted ? "[X]" : "[ ]")} Simple Goal: {Name} - {Description} ({Points} points, Completed {CompletionCount} times, Due: {DueDate.ToShortDateString()})";
+        return $"{(_isCompleted ? "[X]" : "[ ]")} {Name} - ({Description}) ({Points} points, Due: {DueDate.ToShortDateString()})";
     }
 }

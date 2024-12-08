@@ -17,6 +17,6 @@ public class EternalGoal : Goal
 
     public override string GetStatus()
     {
-        return $"[ ] Eternal Goal: {Name} - {Description} ({Points} points each time, Completed {CompletionCount} times, Due: {DueDate.ToShortDateString()})";
+        return $"[ ] {Name} - ({Description}) ({Points} points each time, Due: {DueDate.ToShortDateString()})";
     }
 }

@@ -6,15 +6,15 @@ using System.Text.Json.Serialization;
 
 class GoalManager
 {
-    private List<Goal> goals = new List<Goal>();
-    private int score = 0;
+    private List<Goal> _goals = new List<Goal>();
+    private int _score = 0;
 
     public void AddGoal()
     {
         Console.WriteLine("\nThe types of goals are:");
-        Console.WriteLine("1. Simple Goal");
-        Console.WriteLine("2. Eternal Goal");
-        Console.WriteLine("3. Checklist Goal");
+        Console.WriteLine("  1. Simple Goal");
+        Console.WriteLine("  2. Eternal Goal");
+        Console.WriteLine("  3. Checklist Goal");
         Console.Write("Which type of goal would you like to create? ");
 
         string choice = Console.ReadLine();
@@ -38,23 +38,22 @@ class GoalManager
 
         if (newGoal != null)
         {
-            goals.Add(newGoal);
-            Console.WriteLine("Goal created successfully.");
+            _goals.Add(newGoal);
         }
     }
 
     private SimpleGoal CreateSimpleGoal()
     {
-        Console.Write("Enter the name of the goal: ");
+        Console.Write("What is the name of your goal? ");
         string name = Console.ReadLine();
 
-        Console.Write("Enter a short description: ");
+        Console.Write("What is a short description of it? ");
         string description = Console.ReadLine();
 
-        Console.Write("Enter the points awarded upon completion: ");
+        Console.Write("What is the amount of points associated with this goal?");
         int points = int.Parse(Console.ReadLine());
 
-        Console.Write("Enter the due date (yyyy-mm-dd): ");
+        Console.Write("When is this goal due (yyyy-mm-dd)? ");
         DateTime dueDate = DateTime.Parse(Console.ReadLine());
 
         return new SimpleGoal(name, description, points, dueDate);
@@ -91,7 +90,7 @@ class GoalManager
         Console.Write("Enter the number of times to complete the goal: ");
         int targetCount = int.Parse(Console.ReadLine());
 
-        Console.Write("Enter the bonus points upon completing the goal: ");
+        Console.Write("How many times does this goal need to be accomplished for a bonus? ");
         int bonusPoints = int.Parse(Console.ReadLine());
 
         Console.Write("Enter the due date (yyyy-mm-dd): ");
@@ -102,17 +101,17 @@ class GoalManager
 
     public void DisplayGoals()
     {
-        Console.WriteLine("\nYour Goals:");
-        foreach (var goal in goals)
+        Console.WriteLine("\nYour goals are:");
+        foreach (var goal in _goals)
         {
             Console.WriteLine(goal.GetStatus());
         }
-        Console.WriteLine($"Current Score: {score}");
+        Console.WriteLine($"You have {_score} points.");
     }
 
     public void RecordEvent()
     {
-        var completableGoals = goals.Where(g => g.CanComplete()).ToList();
+        var completableGoals = _goals.Where(g => g.CanComplete()).ToList();
 
         if (completableGoals.Count == 0)
         {
@@ -120,16 +119,16 @@ class GoalManager
         }
 
         Console.WriteLine("\nSelect a goal to record:");
-        for (int i = 0; i < goals.Count; i++)
+        for (int i = 0; i < _goals.Count; i++)
         {
-            Console.WriteLine($"{i + 1}. {goals[i].Name}");
+            Console.WriteLine($"{i + 1}. {_goals[i].Name}");
         }
 
         int choice = int.Parse(Console.ReadLine()) - 1;
 
-        if (choice >= 0 && choice < goals.Count)
+        if (choice >= 0 && choice < _goals.Count)
         {
-            score += goals[choice].RecordEvent();
+            _score += _goals[choice].RecordEvent();
             Console.WriteLine("Event recorded successfully.");
         }
         else
@@ -146,7 +145,7 @@ class GoalManager
             WriteIndented = true
         };
 
-        string jsonString = JsonSerializer.Serialize(goals, options);
+        string jsonString = JsonSerializer.Serialize(_goals, options);
         Console.Write("What is the name of the file: ");
         string filename = Console.ReadLine().Trim();
         File.WriteAllText(filename, jsonString);
@@ -163,7 +162,7 @@ class GoalManager
             };
 
             string jsonFromFile = File.ReadAllText(filename);
-            goals = JsonSerializer.Deserialize<List<Goal>>(jsonFromFile, options);
+            _goals = JsonSerializer.Deserialize<List<Goal>>(jsonFromFile, options);
             Console.WriteLine("Goals loaded successfully.");
         }
         else
@@ -174,13 +173,13 @@ class GoalManager
 
     private void CalculateScore()
     {
-        score = goals.Sum(goal => goal.Points * goal.CompletionCount);
+        _score = _goals.Sum(goal => goal.Points * goal.CompletionCount);
     }
 
     public void DisplayReminders(int daysBeforeDue)
     {
         Console.WriteLine("\nReminders for Goals Due Soon:");
-        foreach (var goal in goals.Where(g => g.IsDueSoon(daysBeforeDue)))
+        foreach (var goal in _goals.Where(g => g.IsDueSoon(daysBeforeDue)))
         {
             Console.WriteLine(goal.GetStatus());
         }

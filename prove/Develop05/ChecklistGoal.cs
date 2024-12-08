@@ -3,30 +3,30 @@ using System.Text.Json.Serialization;
 
 public class ChecklistGoal : Goal
 {
-    private int currentCount = 0;
+    private int _currentCount = 0;
 
-    private int targetCount;
-    private int bonusPoints;
+    private int _targetCount;
+    private int _bonusPoints;
 
     [JsonConstructor]
     public ChecklistGoal(string name, string description, int points, int targetCount, int bonusPoints, DateTime dueDate)
         : base(name, description, points, dueDate)
     {
-        this.targetCount = targetCount;
-        this.bonusPoints = bonusPoints;
+        this._targetCount = targetCount;
+        this._bonusPoints = bonusPoints;
     }
 
     public ChecklistGoal() : base("", "", 0, DateTime.MinValue) { }
 
     public override int RecordEvent()
     {
-        if (currentCount < targetCount)
+        if (_currentCount < _targetCount)
         {
-            currentCount++;
+            _currentCount++;
             CompletionCount++;
-            if (currentCount == targetCount)
+            if (_currentCount == _targetCount)
             {
-                return Points + bonusPoints;
+                return Points + _bonusPoints;
             }
             return Points;
         }
@@ -36,11 +36,11 @@ public class ChecklistGoal : Goal
 
     public override bool CanComplete()
     {
-        return currentCount < targetCount;
+        return _currentCount < _targetCount;
     }
 
     public override string GetStatus()
     {
-        return $"{(currentCount >= targetCount ? "[X]" : "[ ]")} Checklist Goal: {Name} - {Description} ({currentCount}/{targetCount} completed, {Points} points each, {bonusPoints} bonus, Completed {CompletionCount} times, Due: {DueDate.ToShortDateString()})";
+        return $"{(_currentCount >= _targetCount ? "[X]" : "[ ]")} {Name} - ({Description}) ({_currentCount}/{_targetCount} completed, {Points} points each, {_bonusPoints} bonus, Due: {DueDate.ToShortDateString()})";
     }
 }
