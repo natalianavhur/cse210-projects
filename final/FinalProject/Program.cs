@@ -5,13 +5,13 @@ class Program
 {
     static async Task Main(string[] args)
     {
-        string apiKey = "////"; //REMEMBER TO USE FILES AND NOT INSERT IT DIRECTLY.
+        string apiKey = Environment.GetEnvironmentVariable("STOCKS_APIKEY"); //REMEMBER TO USE FILES AND NOT INSERT IT DIRECTLY.
         string databasePath = "StocksData.db";
 
         DatabaseInitializer dbInitializer = new DatabaseInitializer();
         dbInitializer.InitializeDatabase(databasePath);
 
-        HistoricalDataFetcher dataFetcher = new HistoricalDataFetcher(apiKey);
+        HistoricalData dataFetcher = new HistoricalData(apiKey);
 
         string[] symbols = { "IBM", "AAPL", "MSFT", "GOOGL", "TSLA" };
 

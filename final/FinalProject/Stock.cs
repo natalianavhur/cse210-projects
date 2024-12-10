@@ -1,18 +1,18 @@
-class Stock()
+using System;
+using System.Collections.Generic;
+using System.Data.SQLite;
+using System.Linq;
+
+public class Stock
 {
-    private string _symbol;
-    private string _name;
-    private double _price;
-    private int _volume;
+    protected string _symbol;
+    protected string _name;
+    protected double CurrentPrice;
+    protected int Volume { get; set; }
 
-    public void GetData()
+    public Stock(string symbol, string name)
     {
-
+        _symbol = symbol;
+        _name = name;
     }
-
-    public void PredictBehavior()
-    {
-
-    }
-
 }

@@ -6,16 +6,44 @@ using System.Threading.Tasks;
 using System.Data.SQLite;
 using System.Threading;
 
-public class HistoricalDataFetcher
+public class HistoricalData
 {
 
     private const string ApiBaseUrl = "https://www.alphavantage.co/query";
     private readonly string _apiKey;
+    private const string databaseConnection = "Data Source=StocksData.db;Version=3";
 
-    public HistoricalDataFetcher(string apiKey)
+    public void ExtractDataFromDatabase()
+    {
+        using (var connection = new SQLiteConnection(databaseConnection))
+        {
+            connection.Open();
+
+            string query = "SELECT Symbol, Timestamp,  Open, High, Low, Close, Volume FROM table_name WHERE condition;";
+            using (var command = new SQLiteCommand(query, connection))
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    var value1 = reader["Symbol"];
+                    var value2 = reader["Timestamp"];
+                    var value3 = reader["Open"];
+                    var value4 = reader["High"];
+                    var value5 = reader["Low"];
+                    var value6 = reader["Close"];
+                    var value7 = reader["Volume"];
+
+                    Console.WriteLine($"Value1: {value1}, Value2: {value2}");
+                }
+            }
+        }
+
+    }
+    public HistoricalData(string apiKey)
     {
         _apiKey = apiKey;
     }
+
 
     public async Task FetchAndStoreDataForSymbolsAsync(List<string> symbols, string databasePath)
     {
@@ -130,4 +158,6 @@ public class HistoricalDataFetcher
     {
         return long.TryParse(value, out var result) ? result : 0L;
     }
+
+
 }
