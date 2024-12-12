@@ -19,31 +19,47 @@ public class HistoricalData
         {
             connection.Open();
 
-            string query = "SELECT Symbol, Timestamp,  Open, High, Low, Close, Volume FROM table_name WHERE condition;";
+            string query = "SELECT Symbol, Name, Timestamp, Open, High, Low, Close, Volume FROM table_name WHERE condition;";
             using (var command = new SQLiteCommand(query, connection))
             using (var reader = command.ExecuteReader())
             {
+                List<Stock> stocks = new List<Stock>();
+
                 while (reader.Read())
                 {
-                    var value1 = reader["Symbol"];
-                    var value2 = reader["Timestamp"];
-                    var value3 = reader["Open"];
-                    var value4 = reader["High"];
-                    var value5 = reader["Low"];
-                    var value6 = reader["Close"];
-                    var value7 = reader["Volume"];
+                    string symbol = reader["Symbol"].ToString();
+                    string name = reader["Name"].ToString();
+                    DateTime timestamp = DateTime.Parse(reader["Timestamp"].ToString());
+                    double open = Convert.ToDouble(reader["Open"]);
+                    double high = Convert.ToDouble(reader["High"]);
+                    double low = Convert.ToDouble(reader["Low"]);
+                    double close = Convert.ToDouble(reader["Close"]);
+                    int volume = Convert.ToInt32(reader["Volume"]);
 
-                    Console.WriteLine($"Value1: {value1}, Value2: {value2}");
+                    var stock = new Stock(symbol, name)
+                    {
+                        Timestamp = timestamp,
+                        Open = open,
+                        High = high,
+                        Low = low,
+                        Close = close,
+                        Volume = volume
+                    };
+
+                    stocks.Add(stock);
+
+                    Console.WriteLine($"Symbol: {stock.Symbol}, Name: {stock.Name}, Close Price: {stock.Close:C}, Volume: {stock.Volume}");
                 }
+
+                Console.WriteLine($"Extracted {stocks.Count} stocks from the database.");
             }
         }
-
     }
+
     public HistoricalData(string apiKey)
     {
         _apiKey = apiKey;
     }
-
 
     public async Task FetchAndStoreDataForSymbolsAsync(List<string> symbols, string databasePath)
     {

@@ -10,10 +10,12 @@ public class DailyReturns : StockCalculation
     protected List<double> _dailyReturns = new List<double>();
     protected List<double> _dailyReturnPercentages = new List<double>();
 
-    public DailyReturns(string stockName, List<double> stockPrices, int totalPeriods) : base(stockName, stockPrices)
+    public DailyReturns(string stockName, List<double> stockPrices, int totalPeriods, double openingPrice, double closingPrice, double stocksNumber) 
+        : base(stockName, stockPrices)
     {
-
-
+        _openingPrice = openingPrice;
+        _closingPrice = closingPrice;
+        _stocksNumber = stocksNumber;
     }
 
     public override void PerformCalculation()
@@ -32,8 +34,10 @@ public class DailyReturns : StockCalculation
 
             _dailyReturnPercentages.Add(dailyReturnPercentage);
         }
-
     }
 
-
+    public List<double> GetDailyReturns()
+    {
+        return _dailyReturns;
+    }
 }
