@@ -35,7 +35,7 @@ app.MapGet("/stocks/{symbol}", (string symbol) =>
 {
     var historicalData = new HistoricalData("YOUR_API_KEY");
     // return historicalData.ExtractDataFromDatabase();
-    return historicalData.ExtractDataFromDatabase(symbol);
+    // return historicalData.ExtractDataFromDatabase(symbol);
 }
 )
 
