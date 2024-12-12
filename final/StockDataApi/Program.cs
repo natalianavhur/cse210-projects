@@ -31,6 +31,17 @@ app.MapGet("/stocks", () =>
 .WithName("GetStocks")
 .WithOpenApi();
 
+app.MapGet("/stocks/{symbol}", (string symbol) =>
+{
+    var historicalData = new HistoricalData("YOUR_API_KEY");
+    // return historicalData.ExtractDataFromDatabase();
+    return historicalData.ExtractDataFromDatabase(symbol);
+}
+)
+
+.WithName("GetSingleStock")
+.WithOpenApi();
+
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
