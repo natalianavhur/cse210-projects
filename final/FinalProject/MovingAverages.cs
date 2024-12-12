@@ -17,8 +17,20 @@ public class MovingAverages : StockCalculation
     public override void PerformCalculation()
     {
         //Simple Moving Average (SMA)
+
+
+        // Exponential Moving Average (EXA)
+
+    }
+    public List<double> CalculateSMA()
+    {
         List<double> simpleMovingAverage = new List<double>();
         double sma;
+
+        if (_stockPrices.Count < _period)
+        {
+            throw new ArgumentException("Not enough data points to calculate Simple Moving Average.");
+        }
 
         for (int i = 0; i <= _stockPrices.Count - _numPeriods; i++)
         {
@@ -26,7 +38,11 @@ public class MovingAverages : StockCalculation
             simpleMovingAverage.Add(sma);
         }
 
-        // Exponential Moving Average (EXA)
+        return simpleMovingAverage;
+    }
+
+    public List<double> CalculateEMA(List<double> simpleMovingAverage)
+    {
         double smoothingFactor = 2.0 / (5 + 1);
         double ema = simpleMovingAverage[0];
 
@@ -40,11 +56,9 @@ public class MovingAverages : StockCalculation
         {
             Console.WriteLine(value);
         }
-    }
-    // public List<double> CalculateSMA()
-    // {
-    //     return;
 
-    // }
+        return exponentialMovingAverage;
+
+    }
 
 }
