@@ -1,61 +1,104 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using OxyPlot;
-using OxyPlot.ImageSharp;
 
 public class Program
 {
-    public static void Main()
+    public static void Main(string[] args)
     {
-        Market market = new Market();
+        // Initialize HistoricalData with your API key
+        string apiKey = "YOUR_API_KEY";
+        HistoricalData historicalData = new HistoricalData(apiKey);
 
-        var stock1 = new Stock("AAPL", "Apple Inc.")
+        // Extract data from the database
+        Dictionary<string, List<double>> stockData = historicalData.ExtractDataFromDatabase();
+
+        foreach (var stock in stockData)
         {
-            Timestamp = DateTime.Now,
-            Open = 150.00,
-            High = 155.00,
-            Low = 149.00,
-            Close = 152.00,
-            Volume = 1000000
-        };
+            string symbol = stock.Key;
+            List<double> closingPrices = stock.Value;
 
-        market.AddStock(stock1);
+            Console.WriteLine($"\nTesting calculations for stock: {symbol}");
 
-        var stock2 = new Stock("GOOGL", "Alphabet Inc.")
-        {
-            Timestamp = DateTime.Now.AddDays(-1),
-            Open = 2700.00,
-            High = 2750.00,
-            Low = 2680.00,
-            Close = 2730.00,
-            Volume = 500000
-        };
+            if (closingPrices.Count >= 5)
+            {
+                // Test MovingAverages
+                MovingAverages movingAverages = new MovingAverages(closingPrices, period: 5, numPeriods: 3);
+                Console.WriteLine("Moving Averages Calculation:");
+                movingAverages.PerformCalculation();
 
-        market.AddStock(stock2);
+                // Test NextPrice
+                NextPrice nextPrice = new NextPrice(closingPrices);
+                Console.WriteLine("Next Price Calculation:");
+                nextPrice.PerformCalculation();
 
-        ChartManager chartManager = new ConcreteChartManager();
+                // Test Trend
+                Trend trend = new Trend(closingPrices);
+                Console.WriteLine("Trend Calculation:");
+                trend.PerformCalculation();
+                Console.WriteLine($"Trend Direction: {trend.GetTrendDirection()}");
 
-        PlotModel stockPriceChart = chartManager.CreateStockPriceChart(market, "AAPL", "Apple Stock Prices");
+                // Assuming you have additional data points for opening and closing prices for DailyReturns
+                double openingPrice = 100;  // Example value
+                double closingPrice = 110;  // Example value
+                double stocksNumber = 1000; // Example value
 
-        var pngExporter = new PngExporter(800, 600, 96);
-        using (var stream = File.Create("StockPriceChart.png"))
-        {
-            pngExporter.Export(stockPriceChart, stream);
+                // Test DailyReturns
+                DailyReturns dailyReturns = new DailyReturns(closingPrices, openingPrice, closingPrice, stocksNumber);
+                Console.WriteLine("Daily Returns Calculation:");
+                dailyReturns.PerformCalculation();
+                Console.WriteLine("Daily Returns: " + string.Join(", ", dailyReturns.GetDailyReturns()));
+                Console.WriteLine("Daily Return Percentages: " + string.Join(", ", dailyReturns.GetDailyReturnPercentages()));
+
+                // Test LinearRegressionPrediction
+                int totalPeriods = closingPrices.Count; // Example total periods
+                LinearRegressionPrediction linearRegression = new LinearRegressionPrediction(closingPrices, totalPeriods);
+                Console.WriteLine("Linear Regression Prediction Calculation:");
+                linearRegression.PerformCalculation();
+            }
+            else
+            {
+                Console.WriteLine($"Not enough data points to perform calculations for {symbol}.");
+            }
         }
-
-        Console.WriteLine("Chart saved as StockPriceChart.png");
     }
 }
 
-public class ConcreteChartManager : ChartManager
-{
-}
 
 
+// using System;
+// using System.Collections.Generic;
 
+// public class Program
+// {
+//     public static void Main(string[] args)
+//     {
+//         // Initialize HistoricalData with your API key
+//         string apiKey = "YOUR_API_KEY";
+//         HistoricalData historicalData = new HistoricalData(apiKey);
 
+//         // Extract data from the database
+//         Dictionary<string, List<double>> stockData = historicalData.ExtractDataFromDatabase();
 
+//         foreach (var stock in stockData)
+//         {
+//             string symbol = stock.Key;
+//             List<double> closingPrices = stock.Value;
+
+//             if (closingPrices.Count >= 5)  // Ensure there are enough data points
+//             {
+//                 // Create an instance of MovingAverages
+//                 MovingAverages movingAverages = new MovingAverages(closingPrices, period: 5, numPeriods: 3);
+
+//                 // Perform the calculation
+//                 movingAverages.PerformCalculation();
+//             }
+//             else
+//             {
+//                 Console.WriteLine($"Not enough data points to calculate Simple Moving Averages for {symbol}.");
+//             }
+//         }
+//     }
+// }
 
 // using System;
 // using System.Threading.Tasks;

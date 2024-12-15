@@ -1,24 +1,27 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-public class TopPerformers : StockCalculation
+public class TopPerformers
 {
-    protected double _predictedStockPrice;
-    protected List<int> _timePeriods = new List<int>();
+    private HistoricalData _historicalData;
 
-    public double PredictedStockPrice()
+    public TopPerformers(HistoricalData historicalData)
     {
-        return _predictedStockPrice;
-    }
-    public TopPerformers(string stockName, List<double> stockPrices, int totalPeriods) : base(stockName, stockPrices)
-    {
-        
+        _historicalData = historicalData;
     }
 
-    public override void PerformCalculation()
+    public List<Stock> GetTopPerformers()
     {
+        var stockData = _historicalData.ExtractDataFromDatabase();
 
+        foreach (var symbol in stockData.Keys)
+        {
+            var closingPrices = stockData[symbol];
+            if (closingPrices.Count > 1)
+            {
+                double change = closingPrices.Last() - closingPrices.First();
+                _historicalData.UpdateStockChange(symbol, change);
+            }
+        }
 
+        var stocks = _historicalData.GetStocks();
+        return stocks.OrderByDescending(stock => stock.Change).Take(10).ToList();
     }
 }

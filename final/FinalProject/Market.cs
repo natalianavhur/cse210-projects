@@ -5,10 +5,14 @@ using System.Linq;
 public class Market
 {
     private List<Stock> _marketStocks;
+    private HistoricalData _historicalData;
 
-    public Market()
+    public List<Stock> MarketStocks => _marketStocks;
+
+    public Market(HistoricalData historicalData)
     {
         _marketStocks = new List<Stock>();
+        _historicalData = historicalData;
     }
 
     public void AddStock(Stock stock)
@@ -21,7 +25,7 @@ public class Market
         Console.WriteLine("Symbol\tName\tClose Price\tVolume");
         foreach (var stock in _marketStocks)
         {
-            Console.WriteLine($"{stock.Symbol}\t{stock.Name}\t{stock.Close:C}\t{stock.Volume}");
+            Console.WriteLine($"{stock.Symbol}\t{stock.CompanyName}\t{stock.Price:C}\t{stock.Volume}");
         }
     }
 
@@ -34,7 +38,7 @@ public class Market
             throw new ArgumentException("Stock not found.");
         }
 
-        var dailyReturns = new DailyReturns(stock.Name, stockPrices, stockPrices.Count, openingPrice, closingPrice, stocksNumber);
+        var dailyReturns = new DailyReturns(stockPrices, openingPrice, closingPrice, stocksNumber);
         dailyReturns.PerformCalculation();
 
         return dailyReturns.GetDailyReturns();
@@ -49,10 +53,10 @@ public class Market
             throw new ArgumentException("Stock not found.");
         }
 
-        var prediction = new LinearRegressionPrediction(stock.Name, stockPrices, totalPeriods);
+        var prediction = new LinearRegressionPrediction(stockPrices, totalPeriods);
         prediction.PerformCalculation();
 
-        return prediction.PredictedStockPrice();
+        return prediction.PredictedStockPrice;
     }
 
     // Calculate Moving Averages for a stock
@@ -64,7 +68,7 @@ public class Market
             throw new ArgumentException("Stock not found.");
         }
 
-        var movingAverages = new MovingAverages(stock.Name, stockPrices, period, numPeriods);
+        var movingAverages = new MovingAverages(stockPrices, period, numPeriods);
         movingAverages.PerformCalculation();
 
         var sma = movingAverages.CalculateSMA();
@@ -77,4 +81,25 @@ public class Market
     {
         return _marketStocks.FirstOrDefault(s => s.Symbol == symbol);
     }
+
+    // Get Top 10 Performers
+    public List<Stock> GetTopPerformers()
+    {
+        TopPerformers topPerformers = new TopPerformers(_historicalData);
+        return topPerformers.GetTopPerformers();
+    }
+
+    // Calculate Confidence for a stock
+    // public double CalculateConfidence(double[] returns)
+    // {
+    //     Confidence confidence = new Confidence();
+    //     return confidence.CalculateConfidence(returns);
+    // }
+
+    // // Calculate Change for a stock
+    // public double CalculateChange(double openingPrice, double closingPrice)
+    // {
+    //     Change changeCalc = new Change();
+    //     return changeCalc.CalculateChange(openingPrice, closingPrice);
+    // }
 }

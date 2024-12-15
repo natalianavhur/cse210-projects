@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 public class DailyReturns : StockCalculation
 {
@@ -10,8 +7,8 @@ public class DailyReturns : StockCalculation
     protected List<double> _dailyReturns = new List<double>();
     protected List<double> _dailyReturnPercentages = new List<double>();
 
-    public DailyReturns(string stockName, List<double> stockPrices, int totalPeriods, double openingPrice, double closingPrice, double stocksNumber) 
-        : base(stockName, stockPrices)
+    public DailyReturns(List<double> dataPoints, double openingPrice, double closingPrice, double stocksNumber)
+        : base(dataPoints)
     {
         _openingPrice = openingPrice;
         _closingPrice = closingPrice;
@@ -20,24 +17,31 @@ public class DailyReturns : StockCalculation
 
     public override void PerformCalculation()
     {
-        double difference;
+        double previousPrice = _dataPoints[0];
         double dailyReturn;
         double dailyReturnPercentage;
 
-        for (int i = 0; i < _stockPrices.Count; ++i)
+        for (int i = 1; i < _dataPoints.Count; ++i)
         {
-            difference = _closingPrice - _openingPrice;
-            dailyReturn = difference * _stocksNumber;
-
+            dailyReturn = (_dataPoints[i] - previousPrice) * _stocksNumber;
             _dailyReturns.Add(dailyReturn);
-            dailyReturnPercentage = dailyReturn / _stockPrices[i] * 100;
-
+            dailyReturnPercentage = (dailyReturn / previousPrice) * 100;
             _dailyReturnPercentages.Add(dailyReturnPercentage);
+            previousPrice = _dataPoints[i];
         }
+
+        Console.WriteLine("Daily Returns: " + string.Join(", ", _dailyReturns));
+        Console.WriteLine("Daily Return Percentages: " + string.Join(", ", _dailyReturnPercentages));
     }
 
     public List<double> GetDailyReturns()
     {
         return _dailyReturns;
     }
+
+    public List<double> GetDailyReturnPercentages()
+    {
+        return _dailyReturnPercentages;
+    }
 }
+

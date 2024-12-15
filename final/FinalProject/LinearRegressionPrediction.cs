@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 public class LinearRegressionPrediction : StockCalculation
 {
@@ -11,11 +8,12 @@ public class LinearRegressionPrediction : StockCalculation
     protected double _regressionSlope;
     protected double _regressionIntercept;
 
-    public double PredictedStockPrice()
+    public double PredictedStockPrice
     {
-        return _predictedStockPrice;
+        get { return _predictedStockPrice; }
     }
-    public LinearRegressionPrediction(string stockName, List<double> stockPrices, int totalPeriods) : base(stockName, stockPrices)
+
+    public LinearRegressionPrediction(List<double> dataPoints, int totalPeriods) : base(dataPoints)
     {
         for (int i = 1; i <= totalPeriods; i++)
         {
@@ -26,63 +24,26 @@ public class LinearRegressionPrediction : StockCalculation
 
     public override void PerformCalculation()
     {
+        if (_dataPoints.Count < _totalPeriods)
+        {
+            Console.WriteLine("Not enough data points to perform linear regression prediction.");
+            return;
+        }
         double sumProductDeviations = 0;
         double sumSquaredDeviations = 0;
 
         double averageTimePeriod = _timePeriods.Average();
-        double averageStockPrice = _stockPrices.Average();
+        double averageStockPrice = _dataPoints.Average();
 
-        for (int i = 0; i < _stockPrices.Count; ++i)
+        for (int i = 0; i < _dataPoints.Count; ++i)
         {
-            sumProductDeviations += (_timePeriods[i] - averageTimePeriod) * (_stockPrices[i] - averageStockPrice);
+            sumProductDeviations += (_timePeriods[i] - averageTimePeriod) * (_dataPoints[i] - averageStockPrice);
             sumSquaredDeviations += (_timePeriods[i] - averageTimePeriod) * (_timePeriods[i] - averageTimePeriod);
         }
         _regressionSlope = sumProductDeviations / sumSquaredDeviations;
         _regressionIntercept = averageStockPrice - _regressionSlope * averageTimePeriod;
 
         _predictedStockPrice = _regressionSlope * _totalPeriods + _regressionIntercept;
-
+        Console.WriteLine($"Predicted Stock Price: {_predictedStockPrice}");
     }
 }
-
-
-// using System;
-// using System.Collections.Generic;
-// using System.Linq;
-
-// public class LinearRegressionPrediction : StockCalculation
-// {
-//     protected double _stockPrice;
-//     protected List<int> _periods = new List<int>();
-
-//     protected int _period;
-//     protected double _slope;
-//     protected double _yIntercept;
-//     public LinearRegressionPrediction(string stockName, List<double> stockPrices, int period) : base(stockName, stockPrices)
-//     {
-//         for (int i = 1; i <= period; i++)
-//         {
-//             _periods.Add(i);
-//         }
-//         _period = period;
-//     }
-
-//     public override void PerformCalculation()
-//     {
-//         double pricesSum = 0;
-//         double periodsSum = 0;
-
-//         double averageTimePeriod = _periods.Average();
-//         double averageStockPrice = _stockPrices.Average();
-
-//         for (int i = 0; i < _stockPrices.Count; ++i)
-//         {
-//             pricesSum += (_periods[i] - averageTimePeriod) * (_stockPrices[i] - averageStockPrice);
-//             periodsSum += (_periods[i] - averageTimePeriod) * (_periods[i] - averageTimePeriod);
-//         }
-//         _slope = pricesSum / periodsSum;
-//         _yIntercept = averageStockPrice - _slope * averageTimePeriod;
-
-//         _stockPrice = _slope * _period + _yIntercept;
-//     }
-// }

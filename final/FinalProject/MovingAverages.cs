@@ -1,5 +1,4 @@
 using System;
-using System.Net.Mail;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,7 +7,7 @@ public class MovingAverages : StockCalculation
     protected int _period;
     protected int _numPeriods;
 
-    public MovingAverages(string stockName, List<double> stockPrices, int period, int numPeriods) : base(stockName, stockPrices)
+    public MovingAverages(List<double> dataPoints, int period, int numPeriods) : base(dataPoints)
     {
         _period = period;
         _numPeriods = numPeriods;
@@ -16,25 +15,33 @@ public class MovingAverages : StockCalculation
 
     public override void PerformCalculation()
     {
-        //Simple Moving Average (SMA)
+        if (_dataPoints.Count >= _period)
+        {
+            List<double> sma = CalculateSMA();
+            List<double> ema = CalculateEMA(sma);
 
-
-        // Exponential Moving Average (EXA)
-
+            Console.WriteLine("Simple Moving Averages: " + string.Join(", ", sma));
+            Console.WriteLine("Exponential Moving Averages: " + string.Join(", ", ema));
+        }
+        else
+        {
+            Console.WriteLine("Not enough data points to calculate Simple Moving Averages.");
+        }
     }
+
     public List<double> CalculateSMA()
     {
         List<double> simpleMovingAverage = new List<double>();
         double sma;
 
-        if (_stockPrices.Count < _period)
+        if (_dataPoints.Count < _period)
         {
             throw new ArgumentException("Not enough data points to calculate Simple Moving Average.");
         }
 
-        for (int i = 0; i <= _stockPrices.Count - _numPeriods; i++)
+        for (int i = 0; i <= _dataPoints.Count - _numPeriods; i++)
         {
-            sma = _stockPrices.Skip(i).Take(_numPeriods).Average();
+            sma = _dataPoints.Skip(i).Take(_numPeriods).Average();
             simpleMovingAverage.Add(sma);
         }
 
@@ -47,9 +54,9 @@ public class MovingAverages : StockCalculation
         double ema = simpleMovingAverage[0];
 
         List<double> exponentialMovingAverage = new List<double>() { ema };
-        for (int i = 5; i < _stockPrices.Count; i++)
+        for (int i = 5; i < _dataPoints.Count; i++)
         {
-            ema = (_stockPrices[i] * smoothingFactor) + (ema * (1 - smoothingFactor));
+            ema = (_dataPoints[i] * smoothingFactor) + (ema * (1 - smoothingFactor));
             exponentialMovingAverage.Add(ema);
         }
         foreach (var value in exponentialMovingAverage)
@@ -58,7 +65,5 @@ public class MovingAverages : StockCalculation
         }
 
         return exponentialMovingAverage;
-
     }
-
 }

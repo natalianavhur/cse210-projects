@@ -1,12 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 public abstract class StockCalculation
 {
-    public string _stockName;
-    public List<double> _stockPrices;
-
-    public StockCalculation(string stockName, List<double> stockPrices)
+    protected List<double> _dataPoints;
+    public StockCalculation(List<double> dataPoints)
     {
-        _stockName = stockName;
-        _stockPrices = stockPrices;
+        _dataPoints = dataPoints;
     }
 
     public abstract void PerformCalculation();
