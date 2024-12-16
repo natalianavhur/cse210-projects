@@ -29,7 +29,6 @@ public class Market
         }
     }
 
-    // Calculate Daily Returns for a stock
     public List<double> CalculateDailyReturns(string symbol, List<double> stockPrices, double openingPrice, double closingPrice, double stocksNumber)
     {
         var stock = _marketStocks.FirstOrDefault(s => s.Symbol == symbol);
@@ -44,7 +43,6 @@ public class Market
         return dailyReturns.GetDailyReturns();
     }
 
-    // Predict stock price using Linear Regression
     public double PredictStockPrice(string symbol, List<double> stockPrices, int totalPeriods)
     {
         var stock = _marketStocks.FirstOrDefault(s => s.Symbol == symbol);
@@ -58,8 +56,6 @@ public class Market
 
         return prediction.PredictedStockPrice;
     }
-
-    // Calculate Moving Averages for a stock
     public (List<double> SMA, List<double> EMA) CalculateMovingAverages(string symbol, List<double> stockPrices, int period, int numPeriods)
     {
         var stock = _marketStocks.FirstOrDefault(s => s.Symbol == symbol);
@@ -82,24 +78,24 @@ public class Market
         return _marketStocks.FirstOrDefault(s => s.Symbol == symbol);
     }
 
-    // Get Top 10 Performers
     public List<Stock> GetTopPerformers()
     {
-        TopPerformers topPerformers = new TopPerformers(_historicalData);
+        var topPerformers = new TopPerformers(_historicalData);
         return topPerformers.GetTopPerformers();
     }
 
-    // Calculate Confidence for a stock
-    // public double CalculateConfidence(double[] returns)
-    // {
-    //     Confidence confidence = new Confidence();
-    //     return confidence.CalculateConfidence(returns);
-    // }
+    public double CalculateConfidence(double[] returns)
+    {
+        double average = returns.Average();
+        double sumOfSquaresOfDifferences = returns.Select(val => (val - average) * (val - average)).Sum();
+        double standardDeviation = Math.Sqrt(sumOfSquaresOfDifferences / returns.Length);
+        double confidence = standardDeviation / average;
 
-    // // Calculate Change for a stock
-    // public double CalculateChange(double openingPrice, double closingPrice)
-    // {
-    //     Change changeCalc = new Change();
-    //     return changeCalc.CalculateChange(openingPrice, closingPrice);
-    // }
+        return confidence;
+    }
+
+    public double CalculateChange(double openingPrice, double closingPrice)
+    {
+        return closingPrice - openingPrice;
+    }
 }

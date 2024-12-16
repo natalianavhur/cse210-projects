@@ -1,11 +1,10 @@
-
 public class DailyReturns : StockCalculation
 {
-    protected double _closingPrice;
-    protected double _openingPrice;
-    protected double _stocksNumber;
-    protected List<double> _dailyReturns = new List<double>();
-    protected List<double> _dailyReturnPercentages = new List<double>();
+    private double _closingPrice;
+    private double _openingPrice;
+    private double _stocksNumber;
+    private List<double> _dailyReturns = new List<double>();
+    private List<double> _dailyReturnPercentages = new List<double>();
 
     public DailyReturns(List<double> dataPoints, double openingPrice, double closingPrice, double stocksNumber)
         : base(dataPoints)
@@ -44,4 +43,3 @@ public class DailyReturns : StockCalculation
         return _dailyReturnPercentages;
     }
 }
-

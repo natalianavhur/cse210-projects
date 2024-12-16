@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 public class MovingAverages : StockCalculation
 {
-    protected int _period;
-    protected int _numPeriods;
+    private int _period;
+    private int _numPeriods;
 
     public MovingAverages(List<double> dataPoints, int period, int numPeriods) : base(dataPoints)
     {

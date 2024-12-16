@@ -1,12 +1,11 @@
-
 public class LinearRegressionPrediction : StockCalculation
 {
-    protected double _predictedStockPrice;
-    protected List<int> _timePeriods = new List<int>();
+    private double _predictedStockPrice;
+    private List<int> _timePeriods = new List<int>();
 
-    protected int _totalPeriods;
-    protected double _regressionSlope;
-    protected double _regressionIntercept;
+    private int _totalPeriods;
+    private double _regressionSlope;
+    private double _regressionIntercept;
 
     public double PredictedStockPrice
     {
