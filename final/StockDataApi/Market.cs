@@ -5,10 +5,14 @@ using System.Linq;
 public class Market
 {
     private List<Stock> _marketStocks;
+    private HistoricalData _historicalData;
 
-    public Market()
+    public List<Stock> MarketStocks => _marketStocks;
+
+    public Market(HistoricalData historicalData)
     {
         _marketStocks = new List<Stock>();
+        _historicalData = historicalData;
     }
 
     public void AddStock(Stock stock)
@@ -21,11 +25,10 @@ public class Market
         Console.WriteLine("Symbol\tName\tClose Price\tVolume");
         foreach (var stock in _marketStocks)
         {
-            Console.WriteLine($"{stock.Symbol}\t{stock.Name}\t{stock.Close:C}\t{stock.Volume}");
+            Console.WriteLine($"{stock.Symbol}\t{stock.CompanyName}\t{stock.Price:C}\t{stock.Volume}");
         }
     }
 
-    // Calculate Daily Returns for a stock
     public List<double> CalculateDailyReturns(string symbol, List<double> stockPrices, double openingPrice, double closingPrice, double stocksNumber)
     {
         var stock = _marketStocks.FirstOrDefault(s => s.Symbol == symbol);
@@ -34,13 +37,12 @@ public class Market
             throw new ArgumentException("Stock not found.");
         }
 
-        var dailyReturns = new DailyReturns(stock.Name, stockPrices, stockPrices.Count, openingPrice, closingPrice, stocksNumber);
+        var dailyReturns = new DailyReturns(stockPrices, openingPrice, closingPrice, stocksNumber);
         dailyReturns.PerformCalculation();
 
         return dailyReturns.GetDailyReturns();
     }
 
-    // Predict stock price using Linear Regression
     public double PredictStockPrice(string symbol, List<double> stockPrices, int totalPeriods)
     {
         var stock = _marketStocks.FirstOrDefault(s => s.Symbol == symbol);
@@ -49,13 +51,11 @@ public class Market
             throw new ArgumentException("Stock not found.");
         }
 
-        var prediction = new LinearRegressionPrediction(stock.Name, stockPrices, totalPeriods);
+        var prediction = new LinearRegressionPrediction(stockPrices, totalPeriods);
         prediction.PerformCalculation();
 
-        return prediction.PredictedStockPrice();
+        return prediction.PredictedStockPrice;
     }
-
-    // Calculate Moving Averages for a stock
     public (List<double> SMA, List<double> EMA) CalculateMovingAverages(string symbol, List<double> stockPrices, int period, int numPeriods)
     {
         var stock = _marketStocks.FirstOrDefault(s => s.Symbol == symbol);
@@ -64,7 +64,7 @@ public class Market
             throw new ArgumentException("Stock not found.");
         }
 
-        var movingAverages = new MovingAverages(stock.Name, stockPrices, period, numPeriods);
+        var movingAverages = new MovingAverages(stockPrices, period, numPeriods);
         movingAverages.PerformCalculation();
 
         var sma = movingAverages.CalculateSMA();
@@ -76,5 +76,26 @@ public class Market
     public Stock GetStockBySymbol(string symbol)
     {
         return _marketStocks.FirstOrDefault(s => s.Symbol == symbol);
+    }
+
+    public List<Stock> GetTopPerformers()
+    {
+        var topPerformers = new TopPerformers(_historicalData);
+        return topPerformers.GetTopPerformers();
+    }
+
+    public double CalculateConfidence(double[] returns)
+    {
+        double average = returns.Average();
+        double sumOfSquaresOfDifferences = returns.Select(val => (val - average) * (val - average)).Sum();
+        double standardDeviation = Math.Sqrt(sumOfSquaresOfDifferences / returns.Length);
+        double confidence = standardDeviation / average;
+
+        return confidence;
+    }
+
+    public double CalculateChange(double openingPrice, double closingPrice)
+    {
+        return closingPrice - openingPrice;
     }
 }

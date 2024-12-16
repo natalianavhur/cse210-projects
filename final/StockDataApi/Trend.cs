@@ -1,30 +1,43 @@
-// public class Trend : StockCalculation
-// {
-//     public Trend(List<double> dataPoints) : base(dataPoints) { }
+public class Trend : StockCalculation
+{
+    public Trend(List<double> dataPoints) : base(dataPoints) { }
 
-//     public override double Calculate()
-//     {
-//         if (DataPoints.Count < 2)
-//             throw new InvalidOperationException("Not enough data to calculate trend.");
+    public override void PerformCalculation()
+    {
+        if (_dataPoints.Count < 2)
+        {
+            Console.WriteLine("Not enough data points to predict next price.");
+            return;
+        }
 
-//         double sumSlopes = 0;
+        double sumSlopes = 0;
 
-//         // Calculate slopes between consecutive data points
-//         for (int i = 1; i < DataPoints.Count; i++)
-//         {
-//             sumSlopes += DataPoints[i] - DataPoints[i - 1];
-//         }
+        for (int i = 1; i < _dataPoints.Count; i++)
+        {
+            sumSlopes += _dataPoints[i] - _dataPoints[i - 1];
+        }
 
-//         // Return an aggregated trend value (positive = bullish, negative = bearish)
-//         return sumSlopes / (DataPoints.Count - 1);
-//     }
+        double trendValue = sumSlopes / (_dataPoints.Count - 1);
+        Console.WriteLine($"Trend Value: {trendValue}");
+    }
 
-//     // Optional helper method for interpreting trend
-//     public string GetTrendDirection()
-//     {
-//         double trendValue = Calculate();
-//         if (trendValue > 0) return "Bullish";
-//         if (trendValue < 0) return "Bearish";
-//         return "Neutral";
-//     }
-// }
+    public string GetTrendDirection()
+    {
+        double trendValue = CalculateTrendValue();
+        if (trendValue > 0) return "Bullish";
+        if (trendValue < 0) return "Bearish";
+        return "Neutral";
+    }
+
+    public double CalculateTrendValue()
+    {
+        double sumSlopes = 0;
+
+        for (int i = 1; i < _dataPoints.Count; i++)
+        {
+            sumSlopes += _dataPoints[i] - _dataPoints[i - 1];
+        }
+
+        return sumSlopes / (_dataPoints.Count - 1);
+    }
+}
