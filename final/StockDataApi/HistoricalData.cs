@@ -29,6 +29,7 @@ public class HistoricalData : IDisposable
         }
     }
 
+    
     public Dictionary<string, List<Stock>> ExtractDataFromDatabase()
     {
         using (var connection = new SQLiteConnection(DATABASE_CONNECTION))
