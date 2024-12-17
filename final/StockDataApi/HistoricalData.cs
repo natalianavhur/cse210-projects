@@ -9,7 +9,11 @@ public class HistoricalData : IDisposable
 {
     private const string API_BASE_URL = "https://www.alphavantage.co/query";
     private readonly string _apiKey;
-    private const string DATABASE_CONNECTION = "Data Source=StocksData.db;Version=3";
+    // private const string DATABASE_CONNECTION = "Data Source=StocksData.db;Version=3";
+    private const string DATABASE_CONNECTION = "StocksData.db;";
+    // string databaseFilePath = Path.GetFullPath("StocksData.db");
+    // Console.WriteLine("Database file path: " + databaseFilePath);
+
 
     public HistoricalData(string apiKey)
     {
