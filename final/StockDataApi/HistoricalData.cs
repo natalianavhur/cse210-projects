@@ -21,7 +21,7 @@ public class HistoricalData : IDisposable
         using (var connection = new SQLiteConnection(DATABASE_CONNECTION))
         {
             connection.Open();
-            string query = "SELECT Symbol, Timestamp, Open, High, Low, Close, Volume FROM StocksData LIMIT 100;";
+            string query = "SELECT Symbol, Timestamp, Open, High, Low, Close, Volume FROM StockData LIMIT 100;";
 
             using (var command = new SQLiteCommand(query, connection))
             using (var reader = command.ExecuteReader())
