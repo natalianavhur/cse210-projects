@@ -88,31 +88,6 @@ app.MapGet("/stocks", () =>
 .WithName("GetStocks")
 .WithOpenApi();
 
-// app.MapGet("/stocks/{symbol}", (string symbol) =>
-// {
-//     var historicalData = new HistoricalData("YOUR_API_KEY");
-//     var stockData = historicalData.ExtractDataFromDatabase();
-
-//     if (stockData.ContainsKey(symbol))
-//     {
-//         List<double> closingPrices = stockData[symbol];
-//         if (closingPrices.Count >= 5)
-//         {
-//             return PerformCalculations(symbol, closingPrices);
-//         }
-//         else
-//         {
-//             return Results.BadRequest("Not enough data points to perform calculations.");
-//         }
-//     }
-//     else
-//     {
-//         return Results.NotFound("Stock data not found.");
-//     }
-// })
-// .WithName("GetSingleStock")
-// .WithOpenApi();
-
 app.MapGet("/stocks/{symbol}", (string symbol) =>
 {
     var historicalData = new HistoricalData("YOUR_API_KEY");
