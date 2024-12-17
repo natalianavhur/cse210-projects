@@ -16,42 +16,42 @@ public class HistoricalData : IDisposable
         _apiKey = apiKey;
     }
 
-   public Dictionary<string, List<Stock>> ExtractDataFromDatabase()
-{
-    using (var connection = new SQLiteConnection(DATABASE_CONNECTION))
+    public Dictionary<string, List<Stock>> ExtractDataFromDatabase()
     {
-        connection.Open();
-        string query = "SELECT Symbol, Timestamp, Close, Open, High, Low, Volume FROM StockData ORDER BY Timestamp ASC LIMIT 100;";
-
-        using (var command = new SQLiteCommand(query, connection))
-        using (var reader = command.ExecuteReader())
+        using (var connection = new SQLiteConnection(DATABASE_CONNECTION))
         {
-            Dictionary<string, List<Stock>> stockData = new Dictionary<string, List<Stock>>();
-            while (reader.Read())
+            connection.Open();
+            string query = "SELECT Symbol, Timestamp, Close, Open, High, Low, Volume FROM StockData ORDER BY Timestamp ASC LIMIT 100;";
+
+            using (var command = new SQLiteCommand(query, connection))
+            using (var reader = command.ExecuteReader())
             {
-                string symbol = reader["Symbol"].ToString();
-                var record = new Stock
+                Dictionary<string, List<Stock>> stockData = new Dictionary<string, List<Stock>>();
+                while (reader.Read())
                 {
-                    Timestamp = DateTime.Parse(reader["Timestamp"].ToString()),
-                    Close = Convert.ToDouble(reader["Close"]),
-                    Open = Convert.ToDouble(reader["Open"]),
-                    High = Convert.ToDouble(reader["High"]),
-                    Low = Convert.ToDouble(reader["Low"]),
-                    Volume = Convert.ToDouble(reader["Volume"])
-                };
+                    string symbol = reader["Symbol"].ToString();
+                    var stock = new Stock(
+                        symbol: symbol,
+                        date: DateTime.Parse(reader["Timestamp"].ToString()),
+                        open: Convert.ToDouble(reader["Open"]),
+                        high: Convert.ToDouble(reader["High"]),
+                        low: Convert.ToDouble(reader["Low"]),
+                        close: Convert.ToDouble(reader["Close"]),
+                        volume: Convert.ToInt64(reader["Volume"])
+                    );
 
-                if (!stockData.ContainsKey(symbol))
-                {
-                    stockData[symbol] = new List<Stock>();
+                    if (!stockData.ContainsKey(symbol))
+                    {
+                        stockData[symbol] = new List<Stock>();
+                    }
+                    stockData[symbol].Add(stock);
                 }
-                stockData[symbol].Add(record);
-            }
 
-            Console.WriteLine($"Extracted data for {stockData.Count} stocks from the database.");
-            return stockData;
+                Console.WriteLine($"Extracted data for {stockData.Count} stocks from the database.");
+                return stockData;
+            }
         }
     }
-}
     public async Task FetchAndStoreDataForSymbolsAsync(List<string> symbols, string databasePath)
     {
         int requestCount = 0;
@@ -125,7 +125,7 @@ public class HistoricalData : IDisposable
     {
         string interval = "5min"; // Adjust to avoid exceeding API limit of requests
         string adjusted = "true";
-        string extendedHours = "true"; 
+        string extendedHours = "true";
 
         string url = $"{API_BASE_URL}?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval={interval}&apikey={_apiKey}&adjusted={adjusted}&extended_hours={extendedHours}";
 

@@ -1,5 +1,3 @@
-using System;
-
 public class Stock
 {
     private string _symbol;
@@ -11,6 +9,9 @@ public class Stock
     private double _open;
     private double _high;
     private double _low;
+    private double _close;
+
+    public Stock() { }
 
     public Stock(string symbol, string companyName, double price, long volume, double change, DateTime date)
     {
@@ -20,6 +21,18 @@ public class Stock
         _volume = volume;
         _change = change;
         _date = date;
+    }
+
+    // Add a constructor for database mapping
+    public Stock(string symbol, DateTime date, double open, double high, double low, double close, long volume)
+    {
+        _symbol = symbol;
+        _date = date;
+        _open = open;
+        _high = high;
+        _low = low;
+        _close = close;
+        _volume = volume;
     }
 
     public string Symbol
@@ -80,5 +93,11 @@ public class Stock
     {
         get => _low;
         set => _low = value;
+    }
+
+    public double Close
+    {
+        get => _close;
+        set => _close = value;
     }
 }
