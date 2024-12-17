@@ -88,7 +88,31 @@ app.MapGet("/stocks", () =>
 .WithName("GetStocks")
 .WithOpenApi();
 
-// API endpoint to get calculations for a specific stock
+// app.MapGet("/stocks/{symbol}", (string symbol) =>
+// {
+//     var historicalData = new HistoricalData("YOUR_API_KEY");
+//     var stockData = historicalData.ExtractDataFromDatabase();
+
+//     if (stockData.ContainsKey(symbol))
+//     {
+//         List<double> closingPrices = stockData[symbol];
+//         if (closingPrices.Count >= 5)
+//         {
+//             return PerformCalculations(symbol, closingPrices);
+//         }
+//         else
+//         {
+//             return Results.BadRequest("Not enough data points to perform calculations.");
+//         }
+//     }
+//     else
+//     {
+//         return Results.NotFound("Stock data not found.");
+//     }
+// })
+// .WithName("GetSingleStock")
+// .WithOpenApi();
+
 app.MapGet("/stocks/{symbol}", (string symbol) =>
 {
     var historicalData = new HistoricalData("YOUR_API_KEY");
@@ -96,7 +120,9 @@ app.MapGet("/stocks/{symbol}", (string symbol) =>
 
     if (stockData.ContainsKey(symbol))
     {
-        List<double> closingPrices = stockData[symbol];
+        // Extract only the Close prices for calculations
+        List<double> closingPrices = stockData[symbol].Select(stock => stock.Close).ToList();
+
         if (closingPrices.Count >= 5)
         {
             return PerformCalculations(symbol, closingPrices);
