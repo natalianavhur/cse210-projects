@@ -16,32 +16,42 @@ public class HistoricalData : IDisposable
         _apiKey = apiKey;
     }
 
-    public Dictionary<string, List<double>> ExtractDataFromDatabase()
+   public Dictionary<string, List<StockRecord>> ExtractDataFromDatabase()
+{
+    using (var connection = new SQLiteConnection(DATABASE_CONNECTION))
     {
-        using (var connection = new SQLiteConnection(DATABASE_CONNECTION))
+        connection.Open();
+        string query = "SELECT Symbol, Timestamp, Close, Open, High, Low, Volume FROM StockData ORDER BY Timestamp ASC LIMIT 100;";
+
+        using (var command = new SQLiteCommand(query, connection))
+        using (var reader = command.ExecuteReader())
         {
-            connection.Open();
-            string query = "SELECT Symbol, Close FROM StockData ORDER BY Timestamp ASC LIMIT 100;";
-            using (var command = new SQLiteCommand(query, connection))
-            using (var reader = command.ExecuteReader())
+            Dictionary<string, List<StockRecord>> stockData = new Dictionary<string, List<StockRecord>>();
+            while (reader.Read())
             {
-                Dictionary<string, List<double>> stockData = new Dictionary<string, List<double>>();
-                while (reader.Read())
+                string symbol = reader["Symbol"].ToString();
+                var record = new StockRecord
                 {
-                    string symbol = reader["Symbol"].ToString();
-                    double close = Convert.ToDouble(reader["Close"]);
-                    if (!stockData.ContainsKey(symbol))
-                    {
-                        stockData[symbol] = new List<double>();
-                    }
-                    stockData[symbol].Add(close);
+                    Timestamp = DateTime.Parse(reader["Timestamp"].ToString()),
+                    Close = Convert.ToDouble(reader["Close"]),
+                    Open = Convert.ToDouble(reader["Open"]),
+                    High = Convert.ToDouble(reader["High"]),
+                    Low = Convert.ToDouble(reader["Low"]),
+                    Volume = Convert.ToDouble(reader["Volume"])
+                };
+
+                if (!stockData.ContainsKey(symbol))
+                {
+                    stockData[symbol] = new List<StockRecord>();
                 }
-                Console.WriteLine($"Extracted data for {stockData.Count} stocks from the database.");
-                return stockData;
+                stockData[symbol].Add(record);
             }
+
+            Console.WriteLine($"Extracted data for {stockData.Count} stocks from the database.");
+            return stockData;
         }
     }
-
+}
     public async Task FetchAndStoreDataForSymbolsAsync(List<string> symbols, string databasePath)
     {
         int requestCount = 0;
