@@ -9,11 +9,7 @@ public class HistoricalData : IDisposable
 {
     private const string API_BASE_URL = "https://www.alphavantage.co/query";
     private readonly string _apiKey;
-    // private const string DATABASE_CONNECTION = "Data Source=StocksData.db;Version=3";
-    private const string DATABASE_CONNECTION = "StocksData.db;";
-    // string databaseFilePath = Path.GetFullPath("StocksData.db");
-    // Console.WriteLine("Database file path: " + databaseFilePath);
-
+    private const string DATABASE_CONNECTION = "Data Source=StocksData.db;Version=3";
 
     public HistoricalData(string apiKey)
     {
@@ -25,7 +21,7 @@ public class HistoricalData : IDisposable
         using (var connection = new SQLiteConnection(DATABASE_CONNECTION))
         {
             connection.Open();
-            string query = "SELECT Symbol, Timestamp, Close, Open, High, Low, Volume FROM StockData ORDER BY Timestamp ASC LIMIT 100;";
+            string query = "SELECT Symbol, Timestamp, Close, Open, High, Low, Volume FROM StocksData ORDER BY Timestamp ASC LIMIT 100;";
 
             using (var command = new SQLiteCommand(query, connection))
             using (var reader = command.ExecuteReader())
