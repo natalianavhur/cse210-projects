@@ -16,7 +16,7 @@ public class HistoricalData : IDisposable
         _apiKey = apiKey;
     }
 
-   public Dictionary<string, List<StockRecord>> ExtractDataFromDatabase()
+   public Dictionary<string, List<Stock>> ExtractDataFromDatabase()
 {
     using (var connection = new SQLiteConnection(DATABASE_CONNECTION))
     {
