@@ -16,42 +16,68 @@ public class HistoricalData : IDisposable
         _apiKey = apiKey;
     }
 
+    public bool DoesTableExist(SQLiteConnection connection, string tableName)
+    {
+        string query = "SELECT name FROM sqlite_master WHERE type='table' AND name=@tableName;";
+        using (var command = new SQLiteCommand(query, connection))
+        {
+            command.Parameters.AddWithValue("@tableName", tableName);
+            using (var reader = command.ExecuteReader())
+            {
+                return reader.HasRows;
+            }
+        }
+    }
+
     public Dictionary<string, List<Stock>> ExtractDataFromDatabase()
     {
         using (var connection = new SQLiteConnection(DATABASE_CONNECTION))
         {
             connection.Open();
-            string query = "SELECT Symbol, Timestamp, Open, High, Low, Close, Volume FROM StockData LIMIT 100;";
-
-            using (var command = new SQLiteCommand(query, connection))
-            using (var reader = command.ExecuteReader())
+            if (DoesTableExist(connection, "StockData"))
             {
-                Dictionary<string, List<Stock>> stockData = new Dictionary<string, List<Stock>>();
-                while (reader.Read())
+                // The table exists, proceed with your query
+                string query = "SELECT Symbol, Timestamp, Open, High, Low, Close, Volume FROM StockData LIMIT 100;";
+                using (var command = new SQLiteCommand(query, connection))
                 {
-                    string symbol = reader["Symbol"].ToString();
-                    var stock = new Stock(
-                        symbol: symbol,
-                        date: DateTime.Parse(reader["Timestamp"].ToString()),
-                        open: Convert.ToDouble(reader["Open"]),
-                        high: Convert.ToDouble(reader["High"]),
-                        low: Convert.ToDouble(reader["Low"]),
-                        close: Convert.ToDouble(reader["Close"]),
-                        volume: Convert.ToInt64(reader["Volume"])
-                    );
-
-                    if (!stockData.ContainsKey(symbol))
+                    using (var reader = command.ExecuteReader())
                     {
-                        stockData[symbol] = new List<Stock>();
-                    }
-                    stockData[symbol].Add(stock);
-                }
+                        Dictionary<string, List<Stock>> stockData = new Dictionary<string, List<Stock>>();
+                        while (reader.Read())
+                        {
+                            string symbol = reader["Symbol"].ToString();
+                            var stock = new Stock(
+                                symbol: symbol,
+                                date: DateTime.Parse(reader["Timestamp"].ToString()),
+                                open: Convert.ToDouble(reader["Open"]),
+                                high: Convert.ToDouble(reader["High"]),
+                                low: Convert.ToDouble(reader["Low"]),
+                                close: Convert.ToDouble(reader["Close"]),
+                                volume: Convert.ToInt64(reader["Volume"])
+                            );
 
-                Console.WriteLine($"Extracted data for {stockData.Count} stocks from the database.");
-                return stockData;
+                            if (!stockData.ContainsKey(symbol))
+                            {
+                                stockData[symbol] = new List<Stock>();
+                            }
+                            stockData[symbol].Add(stock);
+                        }
+
+                        Console.WriteLine($"Extracted data for {stockData.Count} stocks from the database.");
+                        return stockData;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Table StockData does not exist.");
+                return new Dictionary<string, List<Stock>>();
             }
         }
     }
+
+
+
     public async Task FetchAndStoreDataForSymbolsAsync(List<string> symbols, string databasePath)
     {
         int requestCount = 0;
