@@ -26,11 +26,11 @@ public class HistoricalData : IDisposable
         using (var command = new SQLiteCommand(query, connection))
         using (var reader = command.ExecuteReader())
         {
-            Dictionary<string, List<StockRecord>> stockData = new Dictionary<string, List<StockRecord>>();
+            Dictionary<string, List<Stock>> stockData = new Dictionary<string, List<Stock>>();
             while (reader.Read())
             {
                 string symbol = reader["Symbol"].ToString();
-                var record = new StockRecord
+                var record = new Stock
                 {
                     Timestamp = DateTime.Parse(reader["Timestamp"].ToString()),
                     Close = Convert.ToDouble(reader["Close"]),
@@ -42,7 +42,7 @@ public class HistoricalData : IDisposable
 
                 if (!stockData.ContainsKey(symbol))
                 {
-                    stockData[symbol] = new List<StockRecord>();
+                    stockData[symbol] = new List<Stock>();
                 }
                 stockData[symbol].Add(record);
             }
